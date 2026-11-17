@@ -1,67 +1,328 @@
-# CSDIS — Construction Safety Data Intelligence System
+# Construction Safety Data Intelligence System (CSDIS)
 
-CSDIS is a local-first research workspace for collecting, versioning and reviewing construction safety sources. The current increment provides a source registry, immutable file storage, evidence extraction/review, denominator-aware metric entry, conflict tracking, policy and coverage registers, and literature metadata discovery/screening.
+![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?logo=sqlite&logoColor=white)
+![Research prototype](https://img.shields.io/badge/Status-Research%20prototype-orange)
 
-## Requirements
+A local-first research workspace for collecting construction-safety sources, preserving their provenance, reviewing evidence, and building reproducible policy, technology, and injury-metric records.
+
+> **Project status:** Research prototype / first usable increment. The application and core workflows are implemented, but most seeded evidence and metrics still require human source review. This is a research workbench, not a safety-management or incident-reporting system.
+
+## Contents
+
+- [Overview](#overview)
+- [What CSDIS does](#what-csdis-does)
+- [Research integrity rules](#research-integrity-rules)
+- [Technology stack](#technology-stack)
+- [Quick start](#quick-start)
+- [Using the application](#using-the-application)
+- [Command-line source ingestion](#command-line-source-ingestion)
+- [Project layout](#project-layout)
+- [Local data, privacy, and backups](#local-data-privacy-and-backups)
+- [Tests and quality checks](#tests-and-quality-checks)
+- [Current research dataset](#current-research-dataset)
+- [Limitations and roadmap](#limitations-and-roadmap)
+- [Contributing and reuse](#contributing-and-reuse)
+
+## Overview
+
+CSDIS supports a research project examining how mandated construction-safety technologies align with reported injury hazards, with Hong Kong as the primary case and Singapore as a carefully bounded comparison. It is designed to help a researcher answer questions such as:
+
+- What does an official source actually report, and where is the passage or table row?
+- Which values, definitions, periods, cohorts, and denominators belong together?
+- What does a policy require, for which projects, and from what date?
+- What hazard does a documented technology module address, and what remains unknown about deployment or effectiveness?
+- Which disagreements remain unresolved and need a human decision?
+
+The system preserves original source files and raw extracted values, then keeps review, harmonisation, analysis, and export steps traceable to those sources.
+
+```mermaid
+flowchart LR
+    A[Official and research sources] --> B[Versioned local source store]
+    B --> C[Provisional extraction]
+    C --> D[Human evidence review]
+    D --> E[Metrics and validation]
+    D --> F[Policy and technology coding]
+    G[Crossref and OpenAlex] --> H[Literature screening]
+    E --> I[Conflicts and research exports]
+    F --> I
+    H --> I
+    J[(SQLite database)] --- B
+    J --- D
+    J --- E
+    J --- F
+    J --- H
+```
+
+## What CSDIS does
+
+### Source collection and versioning
+
+- Imports the supplied `CSDIS_Seed_Source_Registry.csv` and supports manual source registration.
+- Stores uploaded or fetched source files as immutable versions, with content hashes and source metadata.
+- Reuses an existing version when identical file content is registered again for the same source.
+- Supports user-triggered retrieval of public HTTP(S) sources. Requests are bounded by size, time, redirects, and public-address checks; retrieval attempts are recorded. The fetcher does not log in, bypass access controls, or retrieve paywalled content.
+- Provides an audited SHA-256 check for stored source versions.
+
+### Document ingestion and evidence review
+
+| Input | Current handling | Important caveat |
+| --- | --- | --- |
+| PDF | Page text via `pypdf`; candidate table rows via `pdfplumber`; source-specific parsers for selected DEVB and DI/464 tables | Extraction is provisional; table layouts can be misread. OCR is not implemented. |
+| HTML | Provisional heading/paragraph evidence and candidate table rows via Beautiful Soup | Dynamic pages and content not present in the downloaded HTML may be missed. |
+| CSV | Candidate rows with source locators | Parsed cell values are retained; interpretation is left to review. |
+| XLSX | Candidate worksheet rows via `openpyxl` | Parsed values may differ from displayed spreadsheet formatting. |
+| DOCX | Candidate table rows via `python-docx` | Only supported document tables are extracted; layout meaning still needs review. |
+
+Evidence and candidate rows retain source-version identifiers and locators. Reviewers can inspect source text and, for PDF evidence, the original page. Review decisions and notes are kept separate from raw extracted content and recorded in the audit log. Human-verified table rows can be promoted into metric records by explicitly selecting label and value cells.
+
+### Metrics, validation, and conflicts
+
+- Records values with period, jurisdiction, classification dimension, units, numerator/denominator fields, denominator meaning, outcome definition, and comparability metadata where available.
+- Keeps different taxonomies separate (for example, accident type, agent, unsafe action, unsafe condition, personal factor, injury nature, and body part).
+- Checks percentage arithmetic and flags missing denominator meaning and other validation issues. It does not infer an unpublished denominator.
+- Detects disagreements between comparable candidate records and preserves both values as an open conflict until a researcher adjudicates or reports it unresolved.
+- Exports metric records to CSV with a JSON manifest containing metric identifiers, source versions, snapshot information, and the CSV checksum. Validation findings can be downloaded as JSON.
+
+### Policy, technology, and hazard coverage
+
+- Maintains evidence-linked registers for policy events, technology modules, and technology-to-hazard mappings.
+- Keeps policy scope, mandate dates, documented function, automation mode, deployment status, and observed effectiveness as distinct concepts.
+- Supports Direct, Indirect, No documented coverage, and Uncertain coverage classes, with a written rationale and coder/reviewer status.
+- Checks that an automation label is compatible with the documented module mode; passive recording cannot be classified as AI detection without supporting evidence.
+- Provides review transitions for proposed and independently coded mappings, adjudication, and locking. A second coder must differ from the original coder before independent coding is recorded.
+
+A draft codebook and three-row draft pilot are included as [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) and [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv). These files are not human-verified research findings. The current database mapping schema stores one evidence identifier per mapping; the pilot CSV retains separate hazard and technology evidence identifiers to make that limitation visible.
+
+### Literature discovery and screening
+
+- Searches Crossref and OpenAlex for bibliographic metadata using user-triggered, paged queries.
+- Logs each query, database, page, page size, result count, outcome, and timestamp.
+- Flags possible DOI/title duplicates for human review; records are not automatically merged.
+- Supports human screening status and exclusion reasons, plus local full-text attachments stored by content hash.
+- Exports literature records as CSV, BibTeX, and RIS.
+
+Search results are discovery aids. They do not replace source appraisal, full-text eligibility review, or citation checking.
+
+### Audit history and portable backups
+
+- Logs important user actions in an append-only audit register.
+- Creates a portable ZIP backup containing a consistent SQLite snapshot, stored raw sources, local literature attachments, and a SHA-256 manifest.
+- Includes a backup action in the application. Restore by stopping CSDIS and extracting the archive into the project directory so the original `data/` paths are recreated.
+
+## Research integrity rules
+
+CSDIS is built around the following safeguards:
+
+1. **Source first:** Preserve original files and raw values. Harmonised or corrected fields do not silently replace source content.
+2. **Traceability:** Link records to a stable source/version identifier and a page, section, row, or other locator when available.
+3. **Human review:** Extracted passages, parsed table rows, and seeded values are provisional until a person checks them against the source.
+4. **Explicit denominators:** Do not calculate a share or rate without a stated numerator, denominator, and denominator meaning.
+5. **Bounded comparability:** Similar labels do not make two populations, outcomes, reporting thresholds, periods, or exposure bases comparable.
+6. **No inferred deployment:** A mandate or specification does not demonstrate installation, compliance, operation, or effectiveness at every eligible site.
+7. **No silent conflict resolution:** Conflicting official values remain visible side by side until a documented human decision is made.
+8. **No default causal claims:** Aggregate trend data alone do not establish that a technology caused a change in injury rates.
+
+## Technology stack
+
+| Area | Technology |
+| --- | --- |
+| Runtime | Python 3.12+ |
+| User interface | Streamlit 1.40+ |
+| Local persistence | SQLite through Python's standard-library `sqlite3` module |
+| Data contracts | Pydantic 2 |
+| Tabular work | pandas |
+| PDF text and tables | pypdf, pdfplumber |
+| HTML parsing | Beautiful Soup 4 |
+| Excel workbooks | openpyxl |
+| Word documents | python-docx |
+| HTTP requests | httpx |
+| Tests | pytest |
+
+`SQLAlchemy` is included in the dependency file for the planned persistence layer, but the current application issues database operations through `sqlite3` directly.
+
+## Quick start
+
+### Requirements
 
 - Python 3.12 or newer
-- The supplied project files, including `CSDIS_Seed_Source_Registry.csv`
+- The repository files, including `CSDIS_Seed_Source_Registry.csv`
+- Network access only if you choose to fetch public sources or search Crossref/OpenAlex; stored local workflows work without those services
 
-## Install and run
-
-From the project folder, on Windows PowerShell:
+### Windows PowerShell
 
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-On macOS or Linux:
+### macOS or Linux
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 streamlit run app.py
 ```
 
-The app creates `data/local/csdis.sqlite3` and imports missing records from the seed source CSV on startup. Register sources or upload source files in the app. Uploaded files are stored under `data/raw/<source_id>/<version_id>/` with the full SHA-256 hash in the database. Re-uploading identical bytes for the same source reuses the existing version. The source registry lets you inspect and download stored versions and run an audited checksum check. A user-triggered HTTP(S) fetch is available for public URLs with a 100 MiB limit, bounded time and redirects, public-address checks, and a recorded success/failure. It does not bypass logins, paywalls or other access controls. PDFs are parsed page by page with native text extraction and candidate table rows; the evidence review tab shows the original PDF page for PDF evidence. HTML creates provisional heading/paragraph evidence and captures a semantic content container when standard text elements omit most of the visible text; HTML tables, CSV, XLSX and DOCX produce candidate rows with source locators. Blank/scanned PDF pages are reported but OCR is not run.
+Streamlit prints the local URL, normally <http://localhost:8501>. On first launch, CSDIS creates `data/local/csdis.sqlite3` and imports missing source records from the seed CSV. The app is designed for a single local researcher; it has no authentication or multi-user permissions.
 
-To retrieve selected public sources from the seeded registry, run `python -m csdis.ingest_sources --source-id S001 --source-id S002 --source-id S003`. This stores immutable versions and extracts provisional evidence. The DEVB 2025 report currently contributes Appendix A and H–O metric records; the live DEVB rate table is ingested separately. These values remain unverified. Differing comparable historical rates are recorded as open conflicts for researcher review.
+To install the development dependencies and run the regression suite:
 
-Hong Kong policy sources S004–S006 and S012, and Singapore sources S007–S009, have also been retrieved. Their policy events, technology modules and injury metrics are evidence-linked but unreviewed. DI/464 fatal-accident counts describe the construction industry, not the DEVB public-works reportable-accident series. Singapore public/private injury shares are incident-report breakdowns with missing counts, not project-cohort rates. Singapore construction fatal-plus-major injury rates use a different outcome definition and cohort from the Hong Kong public-works accident-rate series; do not compare them as equivalent outcomes. The SafeSite Video Analytics pilot is tracked separately from the mandatory baseline VSS recording requirement.
-
-Metric records include outcome-definition and comparability fields. Values marked **Comparable candidates** still require source review; **Context only** and **Not comparable** records should not be combined into cross-jurisdiction rates. Missing published incident counts remain visible as validation findings.
-
-## Local data and backup
-
-The database, raw sources and attached literature full texts are local and excluded from Git. In the app's **Project status** tab, prepare and download a full backup ZIP containing a consistent SQLite snapshot, `data/raw/` source files, `data/literature/full_text/` attachments, and a SHA-256 manifest. Keep the archive somewhere separate from the project folder.
-
-To restore, stop the app, keep a copy of the current `data/` directory, then extract the backup ZIP into the project folder so `data/local/csdis.sqlite3`, `data/raw/` and `data/literature/full_text/` are restored in their original locations. Restart the app and use the source version checksum action to check important files. The manifest lists each archived path, size and checksum. Exports will use `data/exports/` as they are implemented.
-
-## Research integrity
-
-Source documents are retained as immutable versions. Extracted page text and table rows are provisional until reviewed. Human-verified table rows can be promoted to unverified metric records by selecting label/value cells; the original row remains linked as evidence. Percentage checks use only the explicitly entered numerator and denominator; they never infer a denominator. Policy, technology and coverage records require evidence links. Literature metadata searches log exact queries and timestamps; DOI/title duplicates are flagged for review and never merged automatically. Local full-text attachments are stored by content hash, linked to their citation record, checksum-verified before download, and included in backups. CSV downloads are available for source, evidence, table-row, metric, conflict, policy, technology, coverage, literature and literature-search registers. The metric CSV has a companion JSON manifest with metric IDs, source versions/snapshot times and the CSV checksum. See `IMPLEMENTATION_PLAN.md` for implementation phases and acceptance criteria.
-
-## Current limitations
-
-- Source uploads are local. Public URL downloads are available when explicitly triggered; automated refresh scheduling is not implemented.
-- PDF table extraction is heuristic; candidate rows need review and are not automatically interpreted as metrics. Appendix A and H–O have source-specific provisional parsers; they are not a substitute for human review. CSV/XLSX/DOCX extraction preserves parsed cell values but can differ from displayed spreadsheet formatting. OCR is not implemented.
-- Metrics are entered manually or promoted from reviewed table rows. Validation currently checks percentage arithmetic and missing denominator meaning; it does not implement every rule in the specification.
-- Literature discovery supports logged page-number searches in Crossref and OpenAlex; Crossref cursor-based deep retrieval is pending. CSV, BibTeX and RIS exports and content-hashed local full-text attachments are available. Open-access full-text retrieval, combined multi-ledger analysis packages and causal-analysis readiness gates are pending. Metric CSVs include a JSON source-version/checksum manifest, and current validation findings can be downloaded as JSON.
-- A fresh-install end-to-end workflow has not been verified. Source retrieval and extraction were run against the seeded DEVB sources; all extracted metrics remain unverified.
-
-## Tests
-
-Install the development requirements and run the local regression suite:
-
-```powershell
+```bash
 python -m pip install -r requirements-dev.txt
 python -m pytest -q
 ```
 
-The tests cover DEVB monthly and annual rate extraction, repeated-ingest idempotency, period-aware conflict detection, percentage denominator validation and multiple-response warnings, source registration and immutable uploads/checksums, mocked HTTP success/failure/size limits/public redirects/private redirect rejection, CSV/XLSX/DOCX raw-cell preservation, malformed HTML rows, taxonomy separation, and literature full-text hashing/deduplication/screening guards. They use temporary SQLite databases and local fixtures; they do not contact external sites.
+## Using the application
+
+The interface is organised into five top-level areas:
+
+1. **Start here** - suggested workflow and key review cautions.
+2. **Sources** - browse the source register, add a source, fetch a public source, or upload a file.
+3. **Review data** - inspect evidence and table rows, create/review metrics, and handle conflicts.
+4. **Research tools** - maintain policy and technology records, code coverage, and search/screen literature.
+5. **Project tools** - inspect audit activity, check project status, and create a full backup.
+
+### Recommended workflow
+
+1. Browse the seeded register and confirm a source is appropriate for the research question.
+2. Fetch or upload the source. Check its title, publisher, version, and stored file.
+3. Review extracted evidence and table rows against the original page or document. Mark ambiguous or rejected material explicitly.
+4. Create a metric only from a reviewed source row or a directly located evidence passage; preserve the published label and value.
+5. Check the metric's denominator, outcome definition, population, period, and comparability status.
+6. Review open conflicts without overwriting either observation.
+7. Code policy or technology coverage only with explicit source support. Keep mandates separate from actual deployment.
+8. Export the relevant ledger and manifest, then prepare a portable backup.
+
+## Command-line source ingestion
+
+To retrieve selected public sources from the seeded registry and run their available extractors:
+
+```bash
+python -m csdis.ingest_sources --source-id S001 --source-id S002 --source-id S003
+```
+
+Repeat `--source-id` to select more than one source. Retrieval is user-triggered and uses the same bounded public HTTP(S) behavior as the application. Source bytes and provisional extractions are stored locally; extracted records still need human review.
+
+## Project layout
+
+```text
+.
+|-- app.py                              # Streamlit interface
+|-- csdis/
+|   |-- backup.py                       # Consistent ZIP backup and manifest
+|   |-- database.py                     # SQLite schema, connections, audit log
+|   |-- ingest_sources.py               # CLI source retrieval
+|   |-- ingestion.py                    # File extraction and source-specific parsers
+|   |-- literature.py                   # Crossref/OpenAlex, screening, exports, files
+|   |-- schemas.py                      # Pydantic record contracts
+|   |-- seed.py                         # Seed registry import
+|   |-- sources.py                      # Registration, safe fetch, versioning, checksums
+|   `-- validation.py                   # Metric checks and conflict detection
+|-- tests/                              # Offline regression tests and fixtures
+|-- data/                               # Local database, originals, and attachments (ignored)
+|-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata
+|-- CSDIS_Core_Data_Dictionary.csv      # Core field definitions
+|-- IMPLEMENTATION_PLAN.md              # Detailed implementation status and roadmap
+|-- requirements.txt                    # Runtime dependencies
+`-- requirements-dev.txt                # Development/test dependencies
+```
+
+The repository also contains research documents and draft coding artifacts. Draft artifacts should be treated as working materials unless their review status says otherwise.
+
+| Research artifact | Purpose |
+| --- | --- |
+| [Mandated_but_Mismatched_Research_Paper_Updated.docx](Mandated_but_Mismatched_Research_Paper_Updated.docx) | Current updated paper draft; findings remain subject to human evidence review. |
+| [Human_Evidence_Review_Checklist.docx](Human_Evidence_Review_Checklist.docx) | Checklist for source, metric, policy, and coding review. |
+| [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) | Provisional coverage coding rules. |
+| [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) | Three provisional technology-to-hazard coding examples. |
+| [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) | Core data-field definitions. |
+| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Detailed implementation history, outstanding tasks, and acceptance criteria. |
+
+## Local data, privacy, and backups
+
+Local working data is excluded from Git by `.gitignore`:
+
+- `data/local/` - SQLite database
+- `data/raw/` - immutable source files
+- `data/literature/full_text/` - local full-text attachments
+- `data/exports/` and `data/backups/` - generated outputs/backups
+
+The app can make user-triggered network requests to retrieve public sources and query Crossref/OpenAlex. It does not automatically refresh source records or transmit the local SQLite database. Review the source and destination before fetching or searching. Keep backups in a separate, access-controlled location; the archive may contain copyrighted research files and locally collected data.
+
+### Restore a backup
+
+1. Stop the Streamlit process.
+2. Keep a separate copy of the current `data/` directory if you may need it.
+3. Extract the downloaded CSDIS backup ZIP into the project directory, preserving the archive's `data/` paths.
+4. Restart the app and use the source-version checksum action to verify important originals.
+
+The ZIP includes `backup_manifest.json` with archived paths, file sizes, and SHA-256 checksums.
+
+## Tests and quality checks
+
+Run the suite with:
+
+```bash
+python -m pytest -q
+```
+
+The offline regression suite covers:
+
+- DEVB annual and monthly rate extraction, including period-aware conflicts and repeated-ingest idempotency
+- Percentage arithmetic, denominator validation, and multiple-response warnings
+- Source registration, immutable uploads, duplicate content, and checksum verification
+- Mocked public HTTP success/failure, size limits, redirect behavior, and private-address redirect rejection
+- CSV, XLSX, and DOCX cell preservation and malformed HTML table rows
+- Taxonomy separation
+- Literature full-text hashing, duplicate candidates, screening, and review guards
+
+Tests use temporary databases, local fixtures, and mocked HTTP responses; they do not rely on live external websites. Fresh-install workflow verification remains an explicit gap; see the implementation plan.
+
+## Current research dataset
+
+The local research workspace is seeded with selected Hong Kong and Singapore sources. It currently includes:
+
+- DEVB public-works accident data and a separate live historical accident-rate series
+- Hong Kong 4S policy materials, Buildings Department requirements for mobile-plant and tower-crane alert systems, and public-works monitoring materials
+- Singapore MOM sources on video surveillance requirements, WSH outcomes, and a separately tracked SafeSite Video Analytics pilot
+- Ombudsman DI/464 construction fatal-accident counts and recommendations, retained as industry-wide context
+
+**Review status matters:** the seeded evidence, technology modules, policy events, and metrics described in the implementation plan are provisional until source review. The 2025 rate discrepancy between 4.8 and 4.6 is intentionally left open. The values refer to distinct published entries/period contexts; do not choose one silently or present them as fully reconciled. DI/464 industry-wide fatality counts are not the same population or outcome as DEVB public-works reportable-accident rates. Singapore fatal-plus-major injury rates and public/private incident-report shares use different outcomes or bases and must not be combined with the Hong Kong series as equivalent rates.
+
+For detailed source identifiers, review status, field definitions, open conflicts, and phase-by-phase completion notes, see [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) and [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv).
+
+## Limitations and roadmap
+
+### Current limitations
+
+- CSDIS is a local, single-user research prototype. Authentication, shared deployment, role-based access, and a hosted API/database are out of scope for the current increment.
+- PDF table extraction is heuristic. Blank or scanned PDF pages are reported, but OCR is not implemented.
+- HTML extraction cannot guarantee access to dynamic or script-rendered page content.
+- Spreadsheet and Word extraction preserves parsed cells/tables, not all visual formatting or document semantics.
+- Source-specific parsers cover selected DEVB and DI/464 tables; they are not general-purpose table understanding.
+- Validation rules are useful checks, not a complete statistical or methodological review.
+- Crossref/OpenAlex retrieval is page-based; deep cursor-based retrieval and open-access full-text retrieval are pending.
+- Causal analysis, intervention-readiness checks, and integrated paper-ready analysis packages are not implemented.
+- Most seeded evidence and metric rows have not been human-verified. The app does not substitute for checking original sources and independently reviewing coding decisions.
+
+### Next development priorities
+
+1. Complete the documented fresh-install and end-to-end acceptance checks.
+2. Human-review DEVB, Buildings Department, Legislative Council, MOM, and Ombudsman evidence and metric records; retain unresolved conflicts until adjudicated.
+3. Resolve the coverage-mapping evidence-link design so hazard and technology claims can each have their own source evidence identifier.
+4. Pilot the draft codebook with independent human coding and document disagreements before expanding the coverage matrix.
+5. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
+6. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
+
+See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full plan, implemented details, and acceptance criteria.
+
+## Contributing and reuse
+
+This repository is currently structured as a research prototype, and no open-source license has been specified. Before redistributing or reusing the code or collected source files, confirm the applicable rights and source-document terms with the project owner. Contributions should preserve source provenance, review status, raw values, denominator meaning, and unresolved conflicts.
