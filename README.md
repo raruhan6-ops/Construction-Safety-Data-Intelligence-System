@@ -245,6 +245,7 @@ The repository also contains research documents and draft coding artifacts. Draf
 | [Human_Evidence_Review_Checklist.docx](Human_Evidence_Review_Checklist.docx) | Checklist for source, metric, policy, and coding review. |
 | [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) | Provisional coverage coding rules. |
 | [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) | Three provisional technology-to-hazard coding examples. |
+| [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv) | AI-assisted draft coding of all 74 DEVB 2025 hazard categories (Appendices H, L-N) against 4S and VSS functions, with hazard and technology evidence locators; awaiting independent human coding. |
 | [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) | Core data-field definitions. |
 | [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Detailed implementation history, outstanding tasks, and acceptance criteria. |
 
