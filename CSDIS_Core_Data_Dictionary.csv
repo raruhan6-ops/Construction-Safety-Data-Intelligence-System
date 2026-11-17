@@ -1,0 +1,74 @@
+﻿entity,field,type,requirement,definition_and_rule
+source,source_id,string,Required,Stable source registry ID.
+source,source_version_id,string,Required,Immutable downloaded/observed version ID.
+source,canonical_url,url,Required,URL of source.
+source,publisher,string,Required,Issuing organization.
+source,title,string,Required,Source title exactly as published.
+source,publication_date,date,"When source was issued, if known."
+source,retrieved_at,datetime,When system retrieved or researcher recorded the source.
+source,sha256,string,Required for files,Content hash of downloaded file; supports immutable versioning.
+source,authority_tier,enum,Required,Primary official / official guidance / peer-reviewed / secondary / unknown.
+evidence,evidence_id,string,Required,Stable identifier for a claim/value.
+evidence,source_version_id,string,Required,Exact source version supporting the evidence.
+evidence,page_or_section,string,Required,"PDF page, appendix, table, paragraph or HTML locator."
+evidence,exact_quote_or_excerpt,text,Required,Short supporting excerpt or extracted table row.
+evidence,locator_type,enum,Required,PDF page / page+table / HTML heading / dataset row / DOI metadata.
+evidence,extraction_method,enum,Required,Native text / table parser / spreadsheet / OCR / manual.
+evidence,review_status,enum,Required,Unreviewed / machine-checked / human-verified / rejected / superseded.
+evidence,reviewer,string,Optional,Human reviewer identity or initials.
+evidence,confidence,enum,Required,High / medium / low; never equate confidence with truth.
+metric,metric_id,string,Required,Stable metric identifier.
+metric,jurisdiction,enum,Required,Hong Kong / Singapore / cross-country.
+metric,sector_or_cohort,string,Required,Public works / construction industry / VSS-eligible cohort / other.
+metric,period_start,date/year,Required,Start of measurement period.
+metric,period_end,date/year,Required,End of measurement period.
+metric,metric_label_raw,string,Required,Official label exactly as stated.
+metric,metric_label_harmonised,string,Optional,"Researcher-defined label, stored separately from original."
+metric,classification_dimension,enum,Required,Accident type / agent / unsafe action / unsafe condition / personal factor / injury nature / rate / severity.
+metric,numerator,decimal,When relevant,Numerator count used in a percentage/rate.
+metric,denominator,decimal,When relevant,Exact denominator and its semantic description.
+metric,denominator_definition,text,Required for ratios,All accidents / coded records / man-hours / workers / project contracts etc.
+metric,raw_value,string,Required,Raw published cell text including dash/suppression/qualifier.
+metric,numeric_value,decimal,When numeric,Parsed numeric value; null if not safely parseable.
+metric,unit,string,Required,"Percent, accidents, incidents, accidents per 100,000 man-hours, per 1,000 workers, etc."
+metric,rate_multiplier,decimal,For rates,Published rate denominator / scaling multiplier.
+metric,formula,text,For derived metrics,Stored formula and parameters; never overwrite source metric.
+metric,evidence_id,string,Required,Link to exact supporting evidence.
+metric,verification_status,enum,Required,Unverified / arithmetic checked / source checked / human verified / conflict / excluded.
+policy,policy_id,string,Required,Stable policy requirement identifier.
+policy,jurisdiction,enum,Required,Hong Kong / Singapore.
+policy,instrument,string,Required,"Circular, regulation, MOM page, government announcement etc."
+policy,effective_from,date,Required when known,Start date for requirement.
+policy,effective_to,date,Optional,End date if replaced/withdrawn.
+policy,project_threshold,string,Required,"Contract value and scope, retaining local currency."
+policy,covered_project_type,string,Required,Public/private and specific work types.
+policy,mandatory_status,enum,Required,Mandatory / selected mandatory module / encouraged / voluntary / pilot / unknown.
+policy,requirement_text,text,Required,Short faithful description with evidence.
+technology,technology_id,string,Required,Stable system/module ID.
+technology,system_name,string,Required,4S / VSS / SafeSite VA pilot / other.
+technology,module_name,string,Required,"Specific module, not umbrella brand only."
+technology,function_raw,text,Required,Official documented capability.
+technology,detection_mode,enum,Required,Passive record / tracking / sensor threshold / rule-based alert / AI detection / human review.
+technology,hazard_category_id,string,Optional,"Mapped hazard, with coder rationale."
+technology,deployment_status,enum,Required,Mandated / project-selected / installed / operational / unknown / pilot.
+technology,evidence_id,string,Required,Evidence for the function/status.
+mapping,mapping_id,string,Required,Stable hazard-technology mapping.
+mapping,hazard_dimension,enum,Required,One taxonomy dimension per row; dimensions must not be merged.
+mapping,hazard_label_raw,string,Required,Original classification label.
+mapping,hazard_label_harmonised,string,Optional,"Research taxonomy mapping, separately documented."
+mapping,coverage_class,enum,Required,Direct / indirect / no documented coverage / uncertain.
+mapping,coverage_rationale,text,Required,"Why that class was assigned, with evidence."
+mapping,automation_level,enum,Required,Passive recording / tracking / sensor alert / AI detection / manual review.
+mapping,coder_status,enum,Required,Proposed / independently coded / adjudicated / locked.
+mapping,reviewer_notes,text,Optional,"Disagreement, scope condition, limitation."
+literature,record_id,string,Required,Stable paper record ID.
+literature,doi,string,Optional,Canonical DOI when available.
+literature,title,string,Required,Published title.
+literature,authors,text,Required,Author list as published.
+literature,year,integer,Required,Publication year.
+literature,venue,string,Optional,Journal or conference.
+literature,database,string,Required,OpenAlex / Crossref / manual / other.
+literature,search_query_id,string,Required,Search protocol trace.
+literature,screening_status,enum,Required,Unscreened / include / exclude / maybe / full-text pending.
+literature,exclusion_reason,string,Optional,Reason when excluded.
+literature,full_text_status,enum,Required,OA full text / metadata only / user upload / unavailable.

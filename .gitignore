@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.streamlit/secrets.toml
+data/local/
+data/raw/
+data/literature/full_text/
+data/exports/
+data/backups/
+*.sqlite
+*.sqlite3
+*.db
+.pytest_cache/
+.ruff_cache/
