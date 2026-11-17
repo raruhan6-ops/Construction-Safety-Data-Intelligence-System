@@ -9,6 +9,29 @@ from pathlib import Path
 from typing import Any
 
 
+_COVERAGE_COLUMNS = """ (
+  mapping_id TEXT PRIMARY KEY,
+  -- Evidence that the hazard is reported (e.g. a DEVB appendix row).
+  hazard_evidence_id TEXT REFERENCES evidence(evidence_id),
+  -- Evidence of the module's documented function (e.g. a BD specification).
+  technology_evidence_id TEXT REFERENCES evidence(evidence_id),
+  -- Single evidence link from the pre-split schema: its role was never
+  -- recorded, so it is preserved here rather than assigned to either role.
+  legacy_evidence_id TEXT REFERENCES evidence(evidence_id),
+  technology_id TEXT NOT NULL REFERENCES technology_modules(technology_id),
+  hazard_dimension TEXT NOT NULL,
+  hazard_label_raw TEXT NOT NULL,
+  hazard_label_harmonised TEXT,
+  coverage_class TEXT NOT NULL,
+  coverage_rationale TEXT NOT NULL,
+  automation_level TEXT NOT NULL,
+  coder_status TEXT NOT NULL DEFAULT 'Proposed',
+  coder TEXT NOT NULL,
+  reviewer TEXT,
+  reviewer_notes TEXT NOT NULL DEFAULT '',
+  reviewed_at TEXT
+)"""
+
 SCHEMA = """
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS sources (
@@ -150,22 +173,7 @@ CREATE TABLE IF NOT EXISTS technology_modules (
   review_note TEXT,
   created_at TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS coverage_mappings (
-  mapping_id TEXT PRIMARY KEY,
-  evidence_id TEXT NOT NULL REFERENCES evidence(evidence_id),
-  technology_id TEXT NOT NULL REFERENCES technology_modules(technology_id),
-  hazard_dimension TEXT NOT NULL,
-  hazard_label_raw TEXT NOT NULL,
-  hazard_label_harmonised TEXT,
-  coverage_class TEXT NOT NULL,
-  coverage_rationale TEXT NOT NULL,
-  automation_level TEXT NOT NULL,
-  coder_status TEXT NOT NULL DEFAULT 'Proposed',
-  coder TEXT NOT NULL,
-  reviewer TEXT,
-  reviewer_notes TEXT NOT NULL DEFAULT '',
-  reviewed_at TEXT
-);
+CREATE TABLE IF NOT EXISTS coverage_mappings {coverage_columns};
 CREATE TABLE IF NOT EXISTS literature_searches (
   query_id TEXT PRIMARY KEY,
   database_name TEXT NOT NULL,
@@ -238,7 +246,7 @@ CREATE INDEX IF NOT EXISTS idx_mapping_hazard ON coverage_mappings(hazard_dimens
 CREATE INDEX IF NOT EXISTS idx_literature_doi ON literature_records(doi);
 CREATE INDEX IF NOT EXISTS idx_literature_query ON literature_records(query_id);
 CREATE INDEX IF NOT EXISTS idx_literature_full_text_record ON literature_full_texts(record_id);
-"""
+""".replace("{coverage_columns}", _COVERAGE_COLUMNS)
 
 
 def connect(db_path: Path) -> sqlite3.Connection:
@@ -266,7 +274,42 @@ def connect(db_path: Path) -> sqlite3.Connection:
     if "evidence_id" not in table_row_columns:
         connection.execute("ALTER TABLE extracted_table_rows ADD COLUMN evidence_id TEXT REFERENCES evidence(evidence_id)")
     connection.commit()
+    _migrate_coverage_evidence_split(connection)
     return connection
+
+
+_COVERAGE_COPY_COLUMNS = (
+    "mapping_id, technology_id, hazard_dimension, hazard_label_raw, hazard_label_harmonised, "
+    "coverage_class, coverage_rationale, automation_level, coder_status, coder, reviewer, "
+    "reviewer_notes, reviewed_at"
+)
+
+
+def _migrate_coverage_evidence_split(connection: sqlite3.Connection) -> None:
+    """Rebuild a pre-split coverage_mappings table with role-specific evidence links.
+
+    The old single ``evidence_id`` is copied to ``legacy_evidence_id``. It is not
+    assigned to the hazard or technology role because that role was never recorded;
+    a researcher must assign the role-specific links before adjudication.
+    """
+    columns = {row["name"] for row in connection.execute("PRAGMA table_info(coverage_mappings)")}
+    if "evidence_id" not in columns:
+        return
+    with connection:
+        connection.execute(f"CREATE TABLE coverage_mappings__split {_COVERAGE_COLUMNS}")
+        connection.execute(
+            f"INSERT INTO coverage_mappings__split ({_COVERAGE_COPY_COLUMNS}, legacy_evidence_id) "
+            f"SELECT {_COVERAGE_COPY_COLUMNS}, evidence_id FROM coverage_mappings"
+        )
+        migrated = connection.execute("SELECT COUNT(*) FROM coverage_mappings__split").fetchone()[0]
+        connection.execute("DROP TABLE coverage_mappings")
+        connection.execute("ALTER TABLE coverage_mappings__split RENAME TO coverage_mappings")
+        connection.execute(
+            "CREATE INDEX IF NOT EXISTS idx_mapping_hazard ON coverage_mappings(hazard_dimension, hazard_label_raw)"
+        )
+        audit(connection, "coverage_evidence_split_migrated", "table", "coverage_mappings",
+              {"rows": migrated, "note": "Single evidence_id preserved as legacy_evidence_id; roles not inferred."},
+              actor="system")
 
 
 def now_iso() -> str:

@@ -14,6 +14,13 @@ import streamlit as st
 
 from csdis.database import audit, connect, now_iso, table_count
 from csdis.backup import create_backup_archive
+from csdis.coverage import (
+    ALLOWED_TRANSITIONS,
+    CoverageError,
+    propose_coverage_mapping,
+    review_coverage_mapping,
+    set_mapping_evidence,
+)
 from csdis.ingestion import (
     extract_csv_rows,
     extract_devb_appendix_a,
@@ -849,12 +856,21 @@ with tab_research_group:
                         st.error(f"Could not save module: {exc}")
 
         st.subheader("Technology–hazard coverage matrix")
-        mapping_rows = conn.execute("""SELECT m.*, t.system_name, t.module_name, e.page_or_section
+        mapping_rows = conn.execute("""SELECT m.*, t.system_name, t.module_name,
+            he.page_or_section AS hazard_evidence_locator, he.review_status AS hazard_evidence_status,
+            te.page_or_section AS technology_evidence_locator, te.review_status AS technology_evidence_status
             FROM coverage_mappings m JOIN technology_modules t ON t.technology_id=m.technology_id
-            JOIN evidence e ON e.evidence_id=m.evidence_id ORDER BY m.hazard_dimension, m.hazard_label_raw""").fetchall()
+            LEFT JOIN evidence he ON he.evidence_id=m.hazard_evidence_id
+            LEFT JOIN evidence te ON te.evidence_id=m.technology_evidence_id
+            ORDER BY m.hazard_dimension, m.hazard_label_raw""").fetchall()
         if mapping_rows:
             mapping_frame = pd.DataFrame([dict(row) for row in mapping_rows])
             st.dataframe(mapping_frame, use_container_width=True, hide_index=True)
+            incomplete = [row["mapping_id"] for row in mapping_rows
+                          if not row["hazard_evidence_id"] or not row["technology_evidence_id"]]
+            if incomplete:
+                st.warning(f"{len(incomplete)} mapping(s) lack hazard or technology evidence (e.g. migrated from the "
+                           "single-evidence schema). Assign both before adjudication: " + ", ".join(incomplete))
             st.download_button("Download coverage matrix CSV", mapping_frame.to_csv(index=False).encode("utf-8-sig"),
                                "csdis_technology_hazard_coverage.csv", "text/csv")
         else:
@@ -867,8 +883,9 @@ with tab_research_group:
             technology_labels = {f"{row['technology_id']} · {row['system_name']} · {row['module_name']}": row["technology_id"] for row in technology_options_rows}
             with st.form("coverage_mapping_form", clear_on_submit=True):
                 st.markdown("**Propose a mapping (saved as Proposed; never auto-approved)**")
-                c_evidence_label = st.selectbox("Mapping evidence", list(mapping_evidence_labels))
                 c_technology_label = st.selectbox("Technology module", list(technology_labels))
+                c_hazard_evidence_label = st.selectbox("Hazard evidence (where the hazard is reported)", list(mapping_evidence_labels))
+                c_technology_evidence_label = st.selectbox("Technology evidence (the module's documented function)", list(mapping_evidence_labels))
                 hazard_dimension = st.selectbox("Hazard taxonomy dimension", ["Accident type", "Agent", "Unsafe action", "Unsafe condition", "Personal factor", "Injury nature", "Body part"])
                 hazard_raw = st.text_input("Hazard label as published")
                 hazard_normalized = st.text_input("Researcher harmonised label (optional)")
@@ -879,45 +896,18 @@ with tab_research_group:
                 save_mapping = st.form_submit_button("Save proposed mapping")
                 if save_mapping:
                     try:
-                        selected_technology_id = technology_labels[c_technology_label]
-                        selected_module = conn.execute(
-                            "SELECT detection_mode FROM technology_modules WHERE technology_id=?",
-                            (selected_technology_id,),
-                        ).fetchone()
-                        compatible_automation = {
-                            "Passive record": {"Passive recording", "Manual review"},
-                            "Tracking": {"Tracking", "Manual review"},
-                            "Sensor threshold": {"Sensor alert", "Manual review"},
-                            "Rule-based alert": {"Sensor alert", "Manual review"},
-                            "AI detection": {"AI detection", "Manual review"},
-                            "Human review": {"Manual review"},
-                        }
-                        if selected_module and automation_level not in compatible_automation[selected_module["detection_mode"]]:
-                            raise ValueError(
-                                f"Automation label {automation_level} conflicts with the module's documented mode "
-                                f"({selected_module['detection_mode']}). Passive recording cannot be coded as AI detection."
-                            )
                         mapping = CoverageMapping(
                             mapping_id="mapping-" + uuid.uuid4().hex[:16],
-                            evidence_id=mapping_evidence_labels[c_evidence_label],
-                            technology_id=selected_technology_id,
+                            hazard_evidence_id=mapping_evidence_labels[c_hazard_evidence_label],
+                            technology_evidence_id=mapping_evidence_labels[c_technology_evidence_label],
+                            technology_id=technology_labels[c_technology_label],
                             hazard_dimension=hazard_dimension, hazard_label_raw=hazard_raw.strip(),
                             hazard_label_harmonised=hazard_normalized.strip(), coverage_class=coverage_class,
                             coverage_rationale=rationale.strip(), automation_level=automation_level,
                             coder=coder.strip(),
                         )
-                        values = mapping.model_dump()
-                        with conn:
-                            conn.execute("""INSERT INTO coverage_mappings (mapping_id, evidence_id, technology_id,
-                                hazard_dimension, hazard_label_raw, hazard_label_harmonised, coverage_class,
-                                coverage_rationale, automation_level, coder, coder_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Proposed')""",
-                                (values["mapping_id"], values["evidence_id"], values["technology_id"],
-                                 values["hazard_dimension"], values["hazard_label_raw"],
-                                 values["hazard_label_harmonised"], values["coverage_class"],
-                                 values["coverage_rationale"], values["automation_level"], values["coder"]))
-                            audit(conn, "coverage_mapping_proposed", "mapping", values["mapping_id"],
-                                  {"technology_id": values["technology_id"], "evidence_id": values["evidence_id"], "status": "Proposed"})
-                        st.success(f"Saved {values['mapping_id']} as Proposed.")
+                        saved_mapping_id = propose_coverage_mapping(conn, mapping)
+                        st.success(f"Saved {saved_mapping_id} as Proposed.")
                         st.rerun()
                     except Exception as exc:
                         st.error(f"Could not save mapping: {exc}")
@@ -927,34 +917,49 @@ with tab_research_group:
         elif not mapping_evidence_rows:
             st.info("Human-verify source evidence before using it to propose coverage mappings.")
 
-        open_mappings = conn.execute("SELECT mapping_id, hazard_label_raw, coder_status, coder FROM coverage_mappings WHERE coder_status!='Locked' ORDER BY mapping_id").fetchall()
+        open_mappings = conn.execute("""SELECT mapping_id, hazard_label_raw, coder_status, coder,
+            hazard_evidence_id, technology_evidence_id, legacy_evidence_id
+            FROM coverage_mappings WHERE coder_status!='Locked' ORDER BY mapping_id""").fetchall()
         if open_mappings:
             st.subheader("Independent coding and adjudication")
             mapping_labels = {f"{row['mapping_id']} · {row['hazard_label_raw']} · {row['coder_status']}": row["mapping_id"] for row in open_mappings}
             selected_mapping_label = st.selectbox("Mapping to review", list(mapping_labels))
+            selected_mapping = next(row for row in open_mappings if row["mapping_id"] == mapping_labels[selected_mapping_label])
+            st.caption(f"Hazard evidence: {selected_mapping['hazard_evidence_id'] or 'not assigned'} · "
+                       f"Technology evidence: {selected_mapping['technology_evidence_id'] or 'not assigned'}"
+                       + (f" · Legacy (role unrecorded): {selected_mapping['legacy_evidence_id']}"
+                          if selected_mapping["legacy_evidence_id"] else ""))
             mapping_reviewer = st.text_input("Second coder / adjudicator", key="mapping_reviewer")
             mapping_review_note = st.text_area("Reviewer rationale / disagreement note", key="mapping_review_note")
-            selected_mapping = next(row for row in open_mappings if row["mapping_id"] == mapping_labels[selected_mapping_label])
-            allowed_transitions = {
-                "Proposed": ["Independently coded"],
-                "Independently coded": ["Adjudicated"],
-                "Adjudicated": ["Locked"],
-            }
-            next_coder_status = st.selectbox("Review status", allowed_transitions.get(selected_mapping["coder_status"], ["Independently coded"]), key="mapping_review_status")
+            next_coder_status = ALLOWED_TRANSITIONS.get(selected_mapping["coder_status"], "Independently coded")
+            st.selectbox("Review status", [next_coder_status], key="mapping_review_status")
             if st.button("Save mapping review"):
-                if not mapping_reviewer.strip() or not mapping_review_note.strip():
-                    st.error("A reviewer and review note are required to advance mapping status.")
-                elif next_coder_status == "Independently coded" and mapping_reviewer.strip().casefold() == selected_mapping["coder"].strip().casefold():
-                    st.error("The independent coder must differ from the original coder.")
-                else:
-                    mapping_id = mapping_labels[selected_mapping_label]
-                    with conn:
-                        conn.execute("UPDATE coverage_mappings SET coder_status=?, reviewer=?, reviewer_notes=?, reviewed_at=? WHERE mapping_id=?",
-                                     (next_coder_status, mapping_reviewer.strip(), mapping_review_note.strip(), now_iso(), mapping_id))
-                        audit(conn, "coverage_mapping_reviewed", "mapping", mapping_id,
-                              {"status": next_coder_status, "reviewer": mapping_reviewer.strip(), "note": mapping_review_note.strip()})
+                try:
+                    review_coverage_mapping(conn, selected_mapping["mapping_id"], next_coder_status,
+                                            mapping_reviewer, mapping_review_note)
                     st.success("Mapping review recorded; rationale and evidence links remain attached.")
                     st.rerun()
+                except CoverageError as exc:
+                    st.error(str(exc))
+
+            if mapping_evidence_rows:
+                with st.expander("Assign or correct role-specific evidence for this mapping"):
+                    with st.form("mapping_evidence_form"):
+                        label_to_id = {f"{row['evidence_id']} · {row['source_title']} · {row['page_or_section']}": row["evidence_id"]
+                                       for row in mapping_evidence_rows}
+                        labels = list(label_to_id)
+                        set_hazard_label = st.selectbox("Hazard evidence", labels)
+                        set_technology_label = st.selectbox("Technology evidence", labels)
+                        evidence_actor = st.text_input("Researcher name or initials")
+                        evidence_note = st.text_area("Why these evidence links (recorded in the audit log)")
+                        if st.form_submit_button("Save evidence links"):
+                            try:
+                                set_mapping_evidence(conn, selected_mapping["mapping_id"], label_to_id[set_hazard_label],
+                                                     label_to_id[set_technology_label], evidence_actor, evidence_note)
+                                st.success("Evidence links updated and audited.")
+                                st.rerun()
+                            except CoverageError as exc:
+                                st.error(str(exc))
 
     with literature_tab:
         st.subheader("Literature discovery and screening")

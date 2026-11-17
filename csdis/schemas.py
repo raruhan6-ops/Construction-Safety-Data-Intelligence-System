@@ -126,7 +126,8 @@ class CoverageMapping(BaseModel):
     """Researcher-coded mapping from one hazard dimension to one module."""
 
     mapping_id: str = Field(min_length=1)
-    evidence_id: str = Field(min_length=1)
+    hazard_evidence_id: str = Field(min_length=1)
+    technology_evidence_id: str = Field(min_length=1)
     technology_id: str = Field(min_length=1)
     hazard_dimension: Literal["Accident type", "Agent", "Unsafe action", "Unsafe condition", "Personal factor", "Injury nature", "Body part"]
     hazard_label_raw: str = Field(min_length=1)

@@ -94,7 +94,7 @@ Evidence and candidate rows retain source-version identifiers and locators. Revi
 - Checks that an automation label is compatible with the documented module mode; passive recording cannot be classified as AI detection without supporting evidence.
 - Provides review transitions for proposed and independently coded mappings, adjudication, and locking. A second coder must differ from the original coder before independent coding is recorded.
 
-A draft codebook and three-row draft pilot are included as [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) and [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv). These files are not human-verified research findings. The current database mapping schema stores one evidence identifier per mapping; the pilot CSV retains separate hazard and technology evidence identifiers to make that limitation visible.
+A draft codebook and three-row draft pilot are included as [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) and [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv). These files are not human-verified research findings. Each mapping stores two human-verified evidence links: hazard evidence (where the hazard is reported) and technology evidence (the module's documented function), matching the pilot CSV's `hazard_evidence_id` and `technology_evidence_id` columns. Mappings from the earlier single-evidence schema are migrated with that link kept as `legacy_evidence_id`; its role is not inferred, and the mapping cannot be adjudicated or locked until a researcher assigns both role-specific links.
 
 ### Literature discovery and screening
 
@@ -218,6 +218,7 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |-- app.py                              # Streamlit interface
 |-- csdis/
 |   |-- backup.py                       # Consistent ZIP backup and manifest
+|   |-- coverage.py                     # Technology-hazard mapping rules and review chain
 |   |-- database.py                     # SQLite schema, connections, audit log
 |   |-- ingest_sources.py               # CLI source retrieval
 |   |-- ingestion.py                    # File extraction and source-specific parsers
@@ -283,6 +284,7 @@ The offline regression suite covers:
 - Mocked public HTTP success/failure, size limits, redirect behavior, and private-address redirect rejection
 - CSV, XLSX, and DOCX cell preservation and malformed HTML table rows
 - Taxonomy separation
+- Coverage mappings: separate hazard/technology evidence, review-chain rules, and legacy single-evidence migration
 - Literature full-text hashing, duplicate candidates, screening, and review guards
 
 Tests use temporary databases, local fixtures, and mocked HTTP responses; they do not rely on live external websites. Fresh-install workflow verification remains an explicit gap; see the implementation plan.
@@ -318,10 +320,9 @@ For detailed source identifiers, review status, field definitions, open conflict
 
 1. Complete the documented fresh-install and end-to-end acceptance checks.
 2. Human-review DEVB, Buildings Department, Legislative Council, MOM, and Ombudsman evidence and metric records; retain unresolved conflicts until adjudicated.
-3. Resolve the coverage-mapping evidence-link design so hazard and technology claims can each have their own source evidence identifier.
-4. Pilot the draft codebook with independent human coding and document disagreements before expanding the coverage matrix.
-5. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
-6. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
+3. Pilot the draft codebook with independent human coding and document disagreements before expanding the coverage matrix.
+4. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
+5. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
 
 See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full plan, implemented details, and acceptance criteria.
 
