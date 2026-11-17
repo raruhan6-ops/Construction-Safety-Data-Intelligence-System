@@ -368,6 +368,6 @@ The application queries Crossref and OpenAlex for literature metadata. Users and
 
 ### Contribution expectations
 
-Until contribution and licensing terms are formally adopted, obtain the project owner's agreement before accepting or redistributing contributions. Contributions should preserve source provenance, review status, raw values, denominator meaning, and unresolved conflicts. Do not add copyrighted source files, credentials, personal data, or generated local databases to Git.
+The software code is licensed under MIT. Until a formal contribution process is adopted, obtain the project owner's agreement before accepting contributions and require contributors to confirm they have the right to submit code under MIT. Contributions should preserve source provenance, review status, raw values, denominator meaning, and unresolved conflicts. Do not add third-party source files, credentials, personal data, or generated local databases to Git.
 
 The links above are official information sources, not a substitute for reviewing the actual source-specific licence, institutional policies, or legal advice for the intended publication or distribution.
