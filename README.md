@@ -3,6 +3,7 @@
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?logo=sqlite&logoColor=white)
+![Code license: MIT](https://img.shields.io/badge/Code%20license-MIT-green)
 ![Research prototype](https://img.shields.io/badge/Status-Research%20prototype-orange)
 
 A local-first research workspace for collecting construction-safety sources, preserving their provenance, reviewing evidence, and building reproducible policy, technology, and injury-metric records.
@@ -229,6 +230,7 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |-- data/                               # Local database, originals, and attachments (ignored)
 |-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata
 |-- CSDIS_Core_Data_Dictionary.csv      # Core field definitions
+|-- LICENSE                            # MIT license for original software code
 |-- IMPLEMENTATION_PLAN.md              # Detailed implementation status and roadmap
 |-- requirements.txt                    # Runtime dependencies
 `-- requirements-dev.txt                # Development/test dependencies
@@ -327,9 +329,9 @@ See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full plan, implemen
 
 ### Current rights status
 
-No project-wide software license or formal contribution policy has been selected. The copyright owner(s) of the original code, paper, and project documentation have not been recorded in this repository. Until the owner and applicable employment, university, funding, and contributor agreements are confirmed, do not assume that this repository grants permission to reuse, modify, publish, or redistribute those materials. Public visibility on GitHub is not a substitute for a software license.
+The repository includes an [MIT License](LICENSE) for the original CSDIS software code, with the copyright notice **Copyright (c) 2026 Rejuan Ahmed Ruhan**. This grant does not cover third-party sources, government publications, datasets, or research manuscripts and other research artifacts unless they carry a separate license or permission. Those materials retain their own rights and terms. Public visibility on GitHub is not a substitute for checking those source-specific rights.
 
-The project owner should confirm in writing who owns each original work and what rights the owner intends to grant. Copyright ownership can depend on authorship, employment, commissioning, and contract terms. An open-source license, if selected, should clearly apply to the project's own code and should not imply ownership of third-party sources.
+Before distributing the software, the project owner should confirm that they have the right to license all included code under MIT, including any employment, university, funding, or contributor agreements that may apply. Copyright ownership can depend on authorship, employment, commissioning, and contract terms. The MIT grant applies only to original project code; it does not imply ownership of third-party sources.
 
 ### Third-party sources and datasets
 
@@ -352,10 +354,10 @@ Official references (check the current notice for the actual source being reused
 
 | Policy or file | Decision/action needed |
 | --- | --- |
-| `LICENSE` | Select a license for original code and identify the rights holder(s). If the project is to remain closed to reuse, state that clearly instead of implying an open-source grant. |
-| `COPYRIGHT` / `NOTICE` | Record confirmed ownership and copyright notices; list third-party notices separately. A notice does not replace a license. |
+| `LICENSE` | MIT is selected for original software code. Confirm that project agreements allow the named owner to grant these rights. |
+| `COPYRIGHT` / `NOTICE` | Keep the code copyright notice consistent with `LICENSE`; list third-party notices and material-specific licenses separately. A notice does not replace a license. |
 | `THIRD_PARTY_NOTICES.md` or source-reuse register | Document source-specific license/terms, attribution, restrictions, permissions, and whether redistribution of the original file is allowed. |
-| `CONTRIBUTING.md` | Set contribution review rules and decide how contributor copyright/licensing is handled (for example, a Developer Certificate of Origin or contributor agreement). |
+| `CONTRIBUTING.md` | Set contribution review rules and require contributors to confirm they have the right to submit code under the project's MIT license; document any institution or employer approvals required. |
 | Privacy and data-management policy | Define permitted data, access, retention, backup, and deletion practices. Do not add worker-identifiable or confidential records to the repository or public exports. Use aggregate or de-identified data where possible, and obtain institutional privacy/ethics review before collecting or processing personal data. |
 | Research-integrity and publication policy | Require source verification, accurate attribution, transparent methods, reproducible coding decisions, and disclosure of unresolved conflicts and limitations. Follow the applicable university, funder, journal, and ethics-review requirements. |
 | `SECURITY.md` | State how to report vulnerabilities and how secrets, local databases, source files, and backups are protected. Never commit credentials or private research data. |
