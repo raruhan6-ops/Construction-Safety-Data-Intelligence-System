@@ -14,3 +14,8 @@ data/backups/
 *.db
 .pytest_cache/
 .ruff_cache/
+
+# Private research documents and planning files (kept locally, not in Git)
+*.docx
+IMPLEMENTATION_PLAN.md
+MASTER_BUILD_PROMPT_Codex_Claude.md
