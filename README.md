@@ -23,7 +23,7 @@ A local-first research workspace for collecting construction-safety sources, pre
 - [Tests and quality checks](#tests-and-quality-checks)
 - [Current research dataset](#current-research-dataset)
 - [Limitations and roadmap](#limitations-and-roadmap)
-- [Contributing and reuse](#contributing-and-reuse)
+- [Copyright, reuse, and project policies](#copyright-reuse-and-project-policies)
 
 ## Overview
 
@@ -323,6 +323,49 @@ For detailed source identifiers, review status, field definitions, open conflict
 
 See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full plan, implemented details, and acceptance criteria.
 
-## Contributing and reuse
+## Copyright, reuse, and project policies
 
-This repository is currently structured as a research prototype, and no open-source license has been specified. Before redistributing or reusing the code or collected source files, confirm the applicable rights and source-document terms with the project owner. Contributions should preserve source provenance, review status, raw values, denominator meaning, and unresolved conflicts.
+### Current rights status
+
+No project-wide software license or formal contribution policy has been selected. The copyright owner(s) of the original code, paper, and project documentation have not been recorded in this repository. Until the owner and applicable employment, university, funding, and contributor agreements are confirmed, do not assume that this repository grants permission to reuse, modify, publish, or redistribute those materials. Public visibility on GitHub is not a substitute for a software license.
+
+The project owner should confirm in writing who owns each original work and what rights the owner intends to grant. Copyright ownership can depend on authorship, employment, commissioning, and contract terms. An open-source license, if selected, should clearly apply to the project's own code and should not imply ownership of third-party sources.
+
+### Third-party sources and datasets
+
+Government reports, journal articles, standards, websites, photographs, and datasets retain their own rights and terms. A CSDIS source citation or attribution does not by itself grant republication rights. Before publishing or redistributing source text, tables, images, full-text files, or substantial extracts:
+
+1. Check the exact source page, document, dataset, and applicable terms in force for that version.
+2. Record the rights holder, licence or copyright notice, attribution text, access date, restrictions, and any permission evidence in a source-reuse register.
+3. Distribute only the material and amount the applicable licence or permission allows. When rights are unclear, link to the original source and request permission before reproducing it.
+4. Keep third-party source files out of a public repository unless redistribution is expressly allowed. The local CSDIS data directories are Git-ignored for this reason, but the ignore rules do not establish a legal right to store or redistribute a file.
+
+Hong Kong Government website notices are not a single blanket licence: check the notice on each source site, and note that government notices commonly exclude third-party material. Singapore Government datasets on data.gov.sg are governed by the Singapore Open Data Licence; that dataset licence does not automatically cover all content on government websites or third-party rights within a dataset.
+
+Official references (check the current notice for the actual source being reused):
+
+- Hong Kong Intellectual Property Department: [What is copyright?](https://www.ipd.gov.hk/en/copyright/what-is-copyright/index.html) and [Copyright Notice](https://www.ipd.gov.hk/en/important-notices/index.html).
+- Singapore Intellectual Property Office: [Ownership and Commercialisation](https://www.ipos.gov.sg/about-ip/copyright/ownership-and-commercialisation/).
+- Singapore Government: [Singapore Open Data Licence](https://beta.data.gov.sg/open-data-licence) and [data.gov.sg privacy and terms](https://data.gov.sg/privacy-and-terms).
+
+### Project policies to establish before public release
+
+| Policy or file | Decision/action needed |
+| --- | --- |
+| `LICENSE` | Select a license for original code and identify the rights holder(s). If the project is to remain closed to reuse, state that clearly instead of implying an open-source grant. |
+| `COPYRIGHT` / `NOTICE` | Record confirmed ownership and copyright notices; list third-party notices separately. A notice does not replace a license. |
+| `THIRD_PARTY_NOTICES.md` or source-reuse register | Document source-specific license/terms, attribution, restrictions, permissions, and whether redistribution of the original file is allowed. |
+| `CONTRIBUTING.md` | Set contribution review rules and decide how contributor copyright/licensing is handled (for example, a Developer Certificate of Origin or contributor agreement). |
+| Privacy and data-management policy | Define permitted data, access, retention, backup, and deletion practices. Do not add worker-identifiable or confidential records to the repository or public exports. Use aggregate or de-identified data where possible, and obtain institutional privacy/ethics review before collecting or processing personal data. |
+| Research-integrity and publication policy | Require source verification, accurate attribution, transparent methods, reproducible coding decisions, and disclosure of unresolved conflicts and limitations. Follow the applicable university, funder, journal, and ethics-review requirements. |
+| `SECURITY.md` | State how to report vulnerabilities and how secrets, local databases, source files, and backups are protected. Never commit credentials or private research data. |
+
+Relevant official privacy guidance includes Hong Kong's [Personal Data (Privacy) Ordinance overview](https://www.pcpd.org.hk/english/data_privacy_law/ordinance_at_a_Glance/ordinance.html) and Singapore PDPC's [Advisory Guidelines on the PDPA for Selected Topics](https://www.pdpc.gov.sg/-/media/files/pdpc/pdf-files/advisory-guidelines/ag-on-selected-topics/advisory-guidelines-on-the-pdpa-for-selected-topics-4-oct-2021.pdf). CSDIS is currently intended for public source materials and aggregate research records; it is not a reviewed system for handling identifiable worker data.
+
+The application queries Crossref and OpenAlex for literature metadata. Users and maintainers should also follow the services' current [Crossref REST API access and rate guidance](https://www.crossref.org/documentation/retrieve-metadata/rest-api/access-and-authentication/) and [OpenAlex Terms of Service](https://ra.openalex.org/OpenAlex_termsofservice.pdf).
+
+### Contribution expectations
+
+Until contribution and licensing terms are formally adopted, obtain the project owner's agreement before accepting or redistributing contributions. Contributions should preserve source provenance, review status, raw values, denominator meaning, and unresolved conflicts. Do not add copyrighted source files, credentials, personal data, or generated local databases to Git.
+
+The links above are official information sources, not a substitute for reviewing the actual source-specific licence, institutional policies, or legal advice for the intended publication or distribution.
