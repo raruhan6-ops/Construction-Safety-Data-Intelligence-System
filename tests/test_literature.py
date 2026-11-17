@@ -63,3 +63,44 @@ def test_user_upload_status_requires_an_attached_file(literature_db):
         review_literature_record(
             connection, record_id, "Maybe", "User upload", "AB", "Needs full-text review."
         )
+
+
+def _capture_params(monkeypatch, payload):
+    import httpx
+    import csdis.literature as literature
+
+    captured = {}
+
+    def fake_get(url, params=None, **kwargs):
+        captured["url"], captured["params"] = url, dict(params)
+        return httpx.Response(200, json=payload, request=httpx.Request("GET", url))
+
+    monkeypatch.setattr(literature.httpx, "get", fake_get)
+    return captured
+
+
+def test_openalex_title_abstract_and_year_filters_are_sent_and_logged(tmp_path: Path, monkeypatch):
+    from csdis.literature import search_openalex
+
+    captured = _capture_params(monkeypatch, {"meta": {"count": 0}, "results": []})
+    connection = connect(tmp_path / "lit.sqlite3")
+    search_openalex(connection, '"construction safety" AND "hand tool"', 10, 1, field="title_and_abstract", from_year=2015)
+    assert "search" not in captured["params"]
+    assert captured["params"]["filter"] == ('title_and_abstract.search:"construction safety" AND "hand tool",'
+                                            "from_publication_date:2015-01-01")
+    logged = connection.execute("SELECT filters_json FROM literature_searches").fetchone()[0]
+    assert "from_publication_date:2015-01-01" in logged
+    with pytest.raises(ValueError):
+        search_openalex(connection, "a, b", field="title_and_abstract")
+    connection.close()
+
+
+def test_crossref_from_year_filter(tmp_path: Path, monkeypatch):
+    from csdis.literature import search_crossref
+
+    captured = _capture_params(monkeypatch, {"message": {"total-results": 0, "items": []}})
+    connection = connect(tmp_path / "lit.sqlite3")
+    search_crossref(connection, "construction safety hand tool", 10, 1, from_year=2015)
+    assert captured["params"]["filter"] == "from-pub-date:2015-01-01"
+    assert captured["params"]["query.bibliographic"] == "construction safety hand tool"
+    connection.close()

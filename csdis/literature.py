@@ -109,16 +109,22 @@ def _save_search(
 
 
 def search_crossref(connection: sqlite3.Connection, query_text: str, page_size: int = 25,
-                    page: int = 1) -> dict[str, Any]:
-    """Search one offset page of Crossref bibliographic metadata and log it."""
+                    page: int = 1, from_year: int | None = None) -> dict[str, Any]:
+    """Search one offset page of Crossref bibliographic metadata and log it.
+
+    Crossref does not support Boolean operators; pass plain keywords. ``from_year``
+    restricts results to works published from 1 January of that year.
+    """
     page_size = max(1, min(int(page_size), 100))
     page = max(1, min(int(page), max(1, 10000 // page_size)))
     offset = (page - 1) * page_size
-    params = {"query.bibliographic": query_text, "rows": page_size, "offset": offset}
+    params: dict[str, Any] = {"query.bibliographic": query_text, "rows": page_size, "offset": offset}
+    if from_year:
+        params["filter"] = f"from-pub-date:{int(from_year)}-01-01"
     filters = {**params, "page": page}
     try:
         response = httpx.get("https://api.crossref.org/works", params=params,
-                             timeout=httpx.Timeout(20.0, connect=10.0),
+                             timeout=httpx.Timeout(45.0, connect=10.0),
                              headers={"User-Agent": "CSDIS literature discovery/0.1"})
         response.raise_for_status()
         message = response.json().get("message", {})
@@ -143,14 +149,31 @@ def search_crossref(connection: sqlite3.Connection, query_text: str, page_size: 
 
 
 def search_openalex(connection: sqlite3.Connection, query_text: str, page_size: int = 25,
-                    page: int = 1) -> dict[str, Any]:
-    """Search one page of OpenAlex works metadata and log the query."""
+                    page: int = 1, field: str | None = None, from_year: int | None = None) -> dict[str, Any]:
+    """Search one page of OpenAlex works metadata and log the query.
+
+    ``field="title_and_abstract"`` restricts matching to titles and abstracts instead of
+    full text; ``from_year`` restricts publication year. Both are logged with the query.
+    """
     page_size = max(1, min(int(page_size), 100))
     page = max(1, min(int(page), 10000))
-    params = {"search": query_text, "per_page": page_size, "page": page}
+    if field not in (None, "title_and_abstract"):
+        raise ValueError(f"Unsupported OpenAlex search field: {field}")
+    api_filters = []
+    if field:
+        if "," in query_text:
+            raise ValueError("OpenAlex filter searches cannot contain commas.")
+        api_filters.append(f"{field}.search:{query_text}")
+    if from_year:
+        api_filters.append(f"from_publication_date:{int(from_year)}-01-01")
+    params: dict[str, Any] = {"per_page": page_size, "page": page}
+    if not field:
+        params["search"] = query_text
+    if api_filters:
+        params["filter"] = ",".join(api_filters)
     try:
         response = httpx.get("https://api.openalex.org/works", params=params,
-                             timeout=httpx.Timeout(20.0, connect=10.0),
+                             timeout=httpx.Timeout(45.0, connect=10.0),
                              headers={"User-Agent": "CSDIS literature discovery/0.1"})
         response.raise_for_status()
         payload = response.json()
