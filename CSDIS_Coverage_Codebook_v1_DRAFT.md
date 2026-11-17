@@ -95,3 +95,5 @@ Code the documented function, not an assumed capability: **Passive recording**, 
   - VSS unsafe condition: No documented coverage 5 → 0;
   - VSS agent: No documented coverage 1 → 0.
 - **Row status:** every row now carries `coder_status` Adjudicated (32) or Independently coded (agreed) (116). Mappings stay below Locked until both evidence links are verified in CSDIS.
+- **Evidence verification (17 Nov 2026):** coder B compared all 97 cited evidence records with the saved source pages: 74 DEVB appendix rows, 13 4S circular pages and 10 VSS page sections. Coder B confirmed each label, value or excerpt and noted its page and row. The decisions were entered in CSDIS in one batch afterwards, which is why the review timestamps are identical.
+- **CSDIS import:** `tools/import_coverage_matrix.py` loaded the 148 rows as Proposed mappings. Each then moved to Independently coded and to Adjudicated. CSDIS uses Adjudicated also for the 116 agreed rows, with the note "Coders agreed; no adjudication needed". `coverage_scope` (Full or Partial) is kept in the mapping rationale, because the database has no scope field. Rows are not yet Locked.

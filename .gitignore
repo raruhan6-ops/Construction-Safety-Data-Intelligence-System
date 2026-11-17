@@ -19,6 +19,7 @@ data/backups/
 *.docx
 IMPLEMENTATION_PLAN.md
 MASTER_BUILD_PROMPT_Codex_Claude.md
+COMPLETION_GUIDE.md
 
 # Coder pack source copies (third-party documents) and archives
 coder_pack/sources/
@@ -26,3 +27,6 @@ coder_pack*.zip
 coder_pack/returns/
 tools/coding_sheet_*.csv
 tools/coding_report_*.md
+
+# Rendered source pages used for evidence review (third-party content)
+tmp/
