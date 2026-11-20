@@ -85,7 +85,7 @@ Code the documented function, not an assumed capability: **Passive recording**, 
   - HK 4S: 54/74, κ = 0.570;
   - SG VSS: 68/74, κ = 0.635;
   - scope, where both coded Direct: 24/27.
-- **Revised version:** coder B re-saved the sheet with VSS location notes, giving κ = 0.673 overall and 0.651 for VSS. Report the first version, unless it is confirmed that the revision was made without seeing the round-1 feedback.
+- **Revised version:** coder B re-saved the sheet with VSS location notes, giving κ = 0.673 overall and 0.651 for VSS. Coder B confirmed on 21 Nov 2026 that the revision was made after seeing the round-1 comparison, so the paper reports the first version only. Coder B also confirmed that the first version was coded from the source documents alone, without access to coder A's coding.
 - **Production:** the project lead confirmed that coder B coded the sheet personally (17 Nov 2026). File timestamps show only when the sheet was saved, not how long the coding took. 26 of the 4S rationales use the same sentence and the 4S rows have no notes, so those rows give limited insight into the reasoning.
 - **Adjudication:** both coders resolved the disagreements by consensus on 17 Nov 2026, under v1.2. They decided 32 rows: the 29 disagreements and 3 rows affected by the rule changes. They accepted 29 written proposals and overrode 3: Other Machinery became Indirect, and Defective Protective Gear became Indirect for both systems, which led to the amendments of R4 and R6. The record is kept in the local, untracked folder `coder_pack/returns/`.
 - **Applied:** the decisions were applied with `tools/apply_adjudication.py`, which changed 15 rows in class or scope. The 2025 accident-type shares for both systems did not change.

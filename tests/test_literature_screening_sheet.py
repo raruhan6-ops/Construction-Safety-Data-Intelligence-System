@@ -91,3 +91,39 @@ def test_import_rejects_bad_rows_without_writing(conn, tmp_path):
     assert conn.execute("SELECT COUNT(*) FROM literature_records WHERE screening_status!='Unscreened'").fetchone()[0] == 0
     with pytest.raises(ValueError, match="reviewer"):
         sheet.import_sheet(conn, out, " ", apply=True)
+
+
+def test_xlsx_batches_round_trip(conn, tmp_path):
+    from openpyxl import load_workbook
+
+    out = tmp_path / "batches"
+    paths = sheet.export_xlsx_batches(conn, out, batch_size=2, abstracts={"r1": "An abstract."})
+    assert [p.name for p in paths] == ["screening_batch_01_of_02.xlsx", "screening_batch_02_of_02.xlsx"]
+    with pytest.raises(FileExistsError):
+        sheet.export_xlsx_batches(conn, out, batch_size=2)
+    wb = load_workbook(paths[0])
+    ws = wb[sheet.SCREEN_TAB]
+    header = [c.value for c in ws[1]]
+    rows = {r[0]: dict(zip(header, r)) for r in ws.iter_rows(min_row=2, values_only=True)}
+    assert set(rows) == {"r1", "r2"} and rows["r1"]["abstract"] == "An abstract."
+    assert len(ws.data_validations.dataValidation) == 3 and "Instructions" in wb.sheetnames
+    col = {h: i + 1 for i, h in enumerate(header)}
+    for r in range(2, 4):
+        if ws.cell(r, 1).value == "r2":
+            ws.cell(r, col["dup_decision"], "Distinct record")
+            ws.cell(r, col["decision"], "Exclude")
+            ws.cell(r, col["exclusion_reason"], "Not English")
+    wb.save(paths[0])
+    tally = sheet.import_sheet(conn, paths, "Screener", apply=True)
+    assert tally == {"changed": 1, "Exclude": 1, "Distinct record": 1}
+    saved = conn.execute("SELECT * FROM literature_records WHERE record_id='r2'").fetchone()
+    assert (saved["screening_status"], saved["duplicate_status"]) == ("Exclude", "Distinct record")
+    assert "screening_batch_01_of_02.xlsx" in saved["review_note"]
+
+
+def test_import_rejects_record_in_two_files(conn, tmp_path):
+    a, b = tmp_path / "a.csv", tmp_path / "b.csv"
+    sheet.export_sheet(conn, a)
+    sheet.export_sheet(conn, b)
+    with pytest.raises(ValueError, match="also appears"):
+        sheet.import_sheet(conn, [a, b], "Screener", apply=False)

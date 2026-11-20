@@ -30,3 +30,6 @@ tools/coding_report_*.md
 
 # Rendered source pages used for evidence review (third-party content)
 tmp/
+
+# Manuscript versions and reviewer correspondence (identify coders; kept locally)
+review/
