@@ -1,0 +1,27 @@
+count,n
+records_identified,1177
+identified_database_search,813
+identified_other_sources,364
+duplicates_removed,101
+duplicates_matched_by_doi_or_title,96
+duplicates_found_during_screening,5
+records_screened,1076
+records_excluded_title_abstract,894
+title_abstract_excluded: Technology or policy not relevant,530
+title_abstract_excluded: Not construction,228
+title_abstract_excluded: Not safety or health,77
+title_abstract_excluded: Not research or official source,35
+title_abstract_excluded: Not English,19
+title_abstract_excluded: No hazard or policy link,5
+reports_sought,182
+reports_not_retrieved,22
+reports_assessed,160
+reports_excluded_full_text,33
+full_text_excluded: Technology or policy not relevant,26
+full_text_excluded: Not English,3
+full_text_excluded: Duplicate,2
+full_text_excluded: Not construction,1
+full_text_excluded: Not research or official source,1
+studies_included,127
+included_from_database_search,114
+included_from_other_sources,13
