@@ -94,7 +94,7 @@ Evidence and candidate rows retain source-version identifiers and locators. Revi
 - Checks that an automation label is compatible with the documented module mode; passive recording cannot be classified as AI detection without supporting evidence.
 - Provides review transitions for proposed and independently coded mappings, adjudication, and locking. A second coder must differ from the original coder before independent coding is recorded.
 
-A draft codebook and three-row draft pilot are included as [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) and [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv). These files are not human-verified research findings. Each mapping stores two human-verified evidence links: hazard evidence (where the hazard is reported) and technology evidence (the module's documented function), matching the pilot CSV's `hazard_evidence_id` and `technology_evidence_id` columns. Mappings from the earlier single-evidence schema are migrated with that link kept as `legacy_evidence_id`; its role is not inferred, and the mapping cannot be adjudicated or locked until a researcher assigns both role-specific links.
+The coding rules are in [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) (now v1.2, including the round-1 reliability results and the adjudication record). The 148-row 2025 matrix, [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv), was coded independently by two coders and adjudicated by consensus, and both evidence links of every row are human-verified. It describes documented capability, not deployment on sites. [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) is the earlier three-row pilot and is not a research finding. Each mapping stores two human-verified evidence links: hazard evidence (where the hazard is reported) and technology evidence (the module's documented function), matching the pilot CSV's `hazard_evidence_id` and `technology_evidence_id` columns. Mappings from the earlier single-evidence schema are migrated with that link kept as `legacy_evidence_id`; its role is not inferred, and the mapping cannot be adjudicated or locked until a researcher assigns both role-specific links.
 
 ### Literature discovery and screening
 
@@ -103,6 +103,8 @@ A draft codebook and three-row draft pilot are included as [CSDIS_Coverage_Codeb
 - Flags possible DOI/title duplicates for human review; records are not automatically merged.
 - Supports human screening status and exclusion reasons, plus local full-text attachments stored by content hash.
 - Exports literature records as CSV, BibTeX, and RIS.
+- `tools/literature_screening_sheet.py` exports the register as a CSV sheet or as Excel batches (`export-xlsx`, 100 records each, with dropdowns and an instructions tab) and imports the decisions back from either format. The import is a dry run unless `--apply` is given, and it records each decision through the same audited function as the app.
+- `tools/screening_agreement.py` draws a fixed-seed random sample (20% by default) for a second screener and later reports percentage agreement and Cohen's kappa against the recorded decisions. The sample file cannot be read by the import, so the second screener's decisions never overwrite the primary screener's.
 
 Search results are discovery aids. They do not replace source appraisal, full-text eligibility review, or citation checking.
 
@@ -227,27 +229,27 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |   |-- seed.py                         # Seed registry import
 |   |-- sources.py                      # Registration, safe fetch, versioning, checksums
 |   `-- validation.py                   # Metric checks and conflict detection
+|-- tools/                              # Coding comparison, adjudication, matrix import, screening sheets and agreement
+|-- coder_pack/                         # Guide and blank sheet for the independent second coder
+|-- figures/                            # Figure 1 and Figure S1 (PRISMA 2020) data, scripts and outputs
 |-- tests/                              # Offline regression tests and fixtures
 |-- data/                               # Local database, originals, and attachments (ignored)
 |-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata
 |-- CSDIS_Core_Data_Dictionary.csv      # Core field definitions
 |-- LICENSE                            # MIT license for original software code
-|-- IMPLEMENTATION_PLAN.md              # Detailed implementation status and roadmap
 |-- requirements.txt                    # Runtime dependencies
 `-- requirements-dev.txt                # Development/test dependencies
 ```
 
-The repository also contains research documents and draft coding artifacts. Draft artifacts should be treated as working materials unless their review status says otherwise.
+The repository also contains the research coding artifacts below. The manuscript, planning documents and coder correspondence are kept locally and are not in the repository; coder-identifying files are withheld.
 
 | Research artifact | Purpose |
 | --- | --- |
-| [Mandated_but_Mismatched_Research_Paper_Updated.docx](Mandated_but_Mismatched_Research_Paper_Updated.docx) | Current updated paper draft; findings remain subject to human evidence review. |
-| [Human_Evidence_Review_Checklist.docx](Human_Evidence_Review_Checklist.docx) | Checklist for source, metric, policy, and coding review. |
-| [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) | Provisional coverage coding rules. |
-| [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) | Three provisional technology-to-hazard coding examples. |
-| [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv) | AI-assisted draft coding of all 74 DEVB 2025 hazard categories (Appendices H, L-N) against 4S and VSS functions, with hazard and technology evidence locators; awaiting independent human coding. |
+| [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) | Coverage coding rules (v1.2), reliability procedure, round-1 agreement and the adjudication record. |
+| [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv) | All 74 DEVB 2025 hazard categories (Appendices H, L-N) coded against 4S and VSS functions (148 rows), with hazard and technology evidence locators. Independently double-coded and adjudicated by consensus; evidence links human-verified. |
+| [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) | Earlier three-row pilot of the coding scheme. |
 | [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) | Core data-field definitions. |
-| [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) | Detailed implementation history, outstanding tasks, and acceptance criteria. |
+| [coder_pack/guide.md](coder_pack/guide.md) | Instructions given to the independent second coder, with the blank coding sheet. |
 
 ## Local data, privacy, and backups
 
@@ -299,9 +301,9 @@ The local research workspace is seeded with selected Hong Kong and Singapore sou
 - Singapore MOM sources on video surveillance requirements, WSH outcomes, and a separately tracked SafeSite Video Analytics pilot
 - Ombudsman DI/464 construction fatal-accident counts and recommendations, retained as industry-wide context
 
-**Review status matters:** the seeded evidence, technology modules, policy events, and metrics described in the implementation plan are provisional until source review. The 2025 rate discrepancy between 4.8 and 4.6 is intentionally left open. The values refer to distinct published entries/period contexts; do not choose one silently or present them as fully reconciled. DI/464 industry-wide fatality counts are not the same population or outcome as DEVB public-works reportable-accident rates. Singapore fatal-plus-major injury rates and public/private incident-report shares use different outcomes or bases and must not be combined with the Hong Kong series as equivalent rates.
+**Review status matters:** the seeded evidence, technology modules, policy events, and metrics are provisional until source review. The 2025 rate discrepancy between 4.8 and 4.6 is intentionally left open. The values refer to distinct published entries/period contexts; do not choose one silently or present them as fully reconciled. DI/464 industry-wide fatality counts are not the same population or outcome as DEVB public-works reportable-accident rates. Singapore fatal-plus-major injury rates and public/private incident-report shares use different outcomes or bases and must not be combined with the Hong Kong series as equivalent rates.
 
-For detailed source identifiers, review status, field definitions, open conflicts, and phase-by-phase completion notes, see [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) and [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv).
+For detailed source identifiers, review status, field definitions, open conflicts, and phase-by-phase completion notes, see [CSDIS_Seed_Source_Registry.csv](CSDIS_Seed_Source_Registry.csv), [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) and the CSDIS app (**Project tools → Project status and help**).
 
 ## Limitations and roadmap
 
@@ -315,17 +317,15 @@ For detailed source identifiers, review status, field definitions, open conflict
 - Validation rules are useful checks, not a complete statistical or methodological review.
 - Crossref/OpenAlex retrieval is page-based; deep cursor-based retrieval and open-access full-text retrieval are pending.
 - Causal analysis, intervention-readiness checks, and integrated paper-ready analysis packages are not implemented.
-- Most seeded evidence and metric rows have not been human-verified. The app does not substitute for checking original sources and independently reviewing coding decisions.
+- The evidence records cited by the 2025 coverage matrix are human-verified, but most other seeded evidence and metric rows are not. The app does not substitute for checking original sources and independently reviewing coding decisions.
 
 ### Next development priorities
 
 1. Complete the documented fresh-install and end-to-end acceptance checks.
 2. Human-review DEVB, Buildings Department, Legislative Council, MOM, and Ombudsman evidence and metric records; retain unresolved conflicts until adjudicated.
-3. Pilot the draft codebook with independent human coding and document disagreements before expanding the coverage matrix.
+3. Complete title/abstract and full-text screening of the literature register, with a second screener on a random sample, and generate the PRISMA 2020 flow from the register.
 4. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
 5. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
-
-See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the full plan, implemented details, and acceptance criteria.
 
 ## Copyright, reuse, and project policies
 
