@@ -20,7 +20,7 @@ from csdis.database import connect
 from csdis.schemas import CoverageMapping
 
 
-DEFAULT_CSV = ROOT / "CSDIS_Coverage_Matrix_2025_DRAFT.csv"
+DEFAULT_CSV = ROOT / "CSDIS_Coverage_Matrix_2025.csv"
 DEFAULT_DB = ROOT / "data" / "local" / "csdis.sqlite3"
 
 MODULES = {

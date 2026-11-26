@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite the archived release using the DOI on its Zenodo record."
+type: software
+title: "CSDIS: Construction Safety Data Intelligence System"
+abstract: >-
+  Local-first research workbench and data for the study "Mandated but Mismatched? Assessing the
+  Alignment Between Smart Construction Safety Technologies and Reported Injury Hazards in Hong Kong
+  and Singapore". The release contains the CSDIS software (source collection, evidence review,
+  technology-hazard coverage coding and literature screening), the double-coded 148-row 2025
+  coverage matrix with its codebook, and the data and scripts for Figure 1 and the PRISMA 2020
+  flow diagram (Figure S1).
+authors:
+  - family-names: Samir
+    given-names: Mahir Sarwar
+    affiliation: "School of Civil Engineering, Zhengzhou University, Zhengzhou, China"
+  - family-names: Ruhan
+    given-names: Rejuan Ahmed
+    affiliation: "School of Computer Science and Artificial Intelligence, Zhengzhou University, Zhengzhou, China"
+  - family-names: Atika
+    given-names: Afifa Mustari
+    affiliation: "School of Computer Science and Artificial Intelligence, Zhengzhou University, Zhengzhou, China"
+  - family-names: Afruz
+    given-names: Shanjana Dil
+    affiliation: "School of Civil Engineering, Zhengzhou University, Zhengzhou, China"
+version: 1.0.0
+date-released: 2026-11-27
+license: MIT
+repository-code: "https://github.com/raruhan6-ops/Construction-Safety-Data-Intelligence-System"
+keywords:
+  - construction safety
+  - smart site safety
+  - Smart Site Safety System (4S)
+  - video surveillance
+  - occupational injury
+  - hazard coverage
+  - Hong Kong
+  - Singapore
+  - systematic review
+  - PRISMA 2020
