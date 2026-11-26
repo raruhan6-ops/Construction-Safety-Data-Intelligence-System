@@ -4,6 +4,7 @@
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?logo=sqlite&logoColor=white)
 ![Code license: MIT](https://img.shields.io/badge/Code%20license-MIT-green)
+![Data license: CC BY 4.0](https://img.shields.io/badge/Data%20license-CC%20BY%204.0-lightgrey)
 ![Research prototype](https://img.shields.io/badge/Status-Research%20prototype-orange)
 
 A local-first research workspace for collecting construction-safety sources, preserving their provenance, reviewing evidence, and building reproducible policy, technology, and injury-metric records.
@@ -68,6 +69,8 @@ flowchart LR
 | The 148-row 2025 technology–hazard coverage matrix, the coding codebook (v1.2) and the three-row pilot | Official source files and full-text articles: third-party copyright (every official source is listed with its address in `CSDIS_Seed_Source_Registry.csv`) |
 | Figure 1 and Figure S1 (PRISMA 2020) with their data and the scripts that draw them | The coders' individual sheets and adjudication files: they identify the coders (the reliability statistics are in the codebook) |
 | The seed source registry, the core data dictionary and the second coder's guide with its blank sheet | The literature screening register (1,177 records with decisions): available from the corresponding author on reasonable request |
+
+**Licences:** the software is under the [MIT License](LICENSE); the coverage matrix, pilot, codebook, data dictionary, source registry, coder guide and sheet, and the figures with their data are under [CC BY 4.0](LICENSE-DATA.md). Facts and excerpts taken from official publications keep their publishers' terms.
 
 The manuscript's supplementary material (S1: eligibility criteria, decision rules and PRISMA procedure; S2: the 127 included studies) is published with the article.
 
@@ -257,7 +260,8 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |-- data/                               # Local database, originals, and attachments (ignored)
 |-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata
 |-- CSDIS_Core_Data_Dictionary.csv      # Core field definitions
-|-- LICENSE                            # MIT license for original software code
+|-- LICENSE                             # MIT license for the software code
+|-- LICENSE-DATA.md                     # CC BY 4.0 for the research data, documentation and figures
 |-- requirements.txt                    # Runtime dependencies
 `-- requirements-dev.txt                # Development/test dependencies
 ```
@@ -352,7 +356,7 @@ For detailed source identifiers, review status, field definitions, open conflict
 
 ### Current rights status
 
-The repository includes an [MIT License](LICENSE) for the original CSDIS software code, with the copyright notice **Copyright (c) 2026 Rejuan Ahmed Ruhan**. This grant does not cover third-party sources, government publications, datasets, or research manuscripts and other research artifacts unless they carry a separate license or permission. Those materials retain their own rights and terms. Public visibility on GitHub is not a substitute for checking those source-specific rights.
+The repository includes an [MIT License](LICENSE) for the original CSDIS software code, with the copyright notice **Copyright (c) 2026 Rejuan Ahmed Ruhan**. The research data, documentation and figures are licensed under [CC BY 4.0](LICENSE-DATA.md) by the four authors. Neither grant covers third-party sources, government publications, datasets, or research manuscripts and other research artifacts unless they carry a separate license or permission. Those materials retain their own rights and terms. Public visibility on GitHub is not a substitute for checking those source-specific rights.
 
 Before distributing the software, the project owner should confirm that they have the right to license all included code under MIT, including any employment, university, funding, or contributor agreements that may apply. Copyright ownership can depend on authorship, employment, commissioning, and contract terms. The MIT grant applies only to original project code; it does not imply ownership of third-party sources.
 
@@ -377,7 +381,7 @@ Official references (check the current notice for the actual source being reused
 
 | Policy or file | Decision/action needed |
 | --- | --- |
-| `LICENSE` | MIT is selected for original software code. Confirm that project agreements allow the named owner to grant these rights. |
+| `LICENSE`, `LICENSE-DATA.md` | MIT for the software code and CC BY 4.0 for the research data, documentation and figures (adopted at release 1.0.0). Confirm that project agreements allow the named owners to grant these rights. |
 | `COPYRIGHT` / `NOTICE` | Keep the code copyright notice consistent with `LICENSE`; list third-party notices and material-specific licenses separately. A notice does not replace a license. |
 | `THIRD_PARTY_NOTICES.md` or source-reuse register | Document source-specific license/terms, attribution, restrictions, permissions, and whether redistribution of the original file is allowed. |
 | `CONTRIBUTING.md` | Set contribution review rules and require contributors to confirm they have the right to submit code under the project's MIT license; document any institution or employer approvals required. |
