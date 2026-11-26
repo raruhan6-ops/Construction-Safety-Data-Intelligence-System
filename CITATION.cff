@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: >-
-  If you use this software or data, please cite the archived release using the DOI on its Zenodo
-  record. The software is under the MIT License; the research data, documentation and figures are
+  If you use this software or data, please cite the archived release on Zenodo
+  (https://doi.org/10.5281/zenodo.24570714). The software is under the MIT License; the research data, documentation and figures are
   under CC BY 4.0 (see LICENSE-DATA.md).
 type: software
 title: "CSDIS: Construction Safety Data Intelligence System"
@@ -26,6 +26,7 @@ authors:
     given-names: Shanjana Dil
     affiliation: "School of Civil Engineering, Zhengzhou University, Zhengzhou, China"
 version: 1.0.0
+doi: 10.5281/zenodo.24570714
 date-released: 2026-11-27
 license: MIT
 repository-code: "https://github.com/raruhan6-ops/Construction-Safety-Data-Intelligence-System"
