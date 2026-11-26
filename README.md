@@ -1,5 +1,6 @@
 # Construction Safety Data Intelligence System (CSDIS)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24570714.svg)](https://doi.org/10.5281/zenodo.24570714)
 ![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?logo=sqlite&logoColor=white)
@@ -76,7 +77,11 @@ The manuscript's supplementary material (S1: eligibility criteria, decision rule
 
 ## How to cite
 
-Please cite the archived release, using the DOI shown on its Zenodo record. Citation metadata is in [CITATION.cff](CITATION.cff); GitHub's **Cite this repository** button formats it in APA and BibTeX. When the article is published, please cite it as well.
+Please cite the archived release on Zenodo: [doi:10.5281/zenodo.24570714](https://doi.org/10.5281/zenodo.24570714). This DOI always resolves to the latest version; version 1.0.0 is [doi:10.5281/zenodo.24570715](https://doi.org/10.5281/zenodo.24570715).
+
+> Samir, M. S., Ruhan, R. A., Atika, A. M., & Afruz, S. D. (2026). *CSDIS: Construction Safety Data Intelligence System* (Version 1.0.0) [Computer software and data]. Zenodo. https://doi.org/10.5281/zenodo.24570714
+
+Citation metadata is in [CITATION.cff](CITATION.cff); GitHub's **Cite this repository** button formats it in APA and BibTeX. When the article is published, please cite it as well.
 
 ## What CSDIS does
 
