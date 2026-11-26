@@ -231,7 +231,7 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |   `-- validation.py                   # Metric checks and conflict detection
 |-- tools/                              # Coding comparison, adjudication, matrix import, screening sheets and agreement
 |-- coder_pack/                         # Guide and blank sheet for the independent second coder
-|-- figures/                            # Figure 3 data, script and output
+|-- figures/                            # Figure 1 data, script and output
 |-- tests/                              # Offline regression tests and fixtures
 |-- data/                               # Local database, originals, and attachments (ignored)
 |-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata

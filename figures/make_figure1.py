@@ -1,9 +1,9 @@
-"""Figure 3: Hong Kong public-works accident rates, 2016-2025, with policy dates (descriptive only).
+"""Figure 1: Hong Kong public-works accident rates, 2016-2025, with policy dates (descriptive only).
 
 Reads published values from the local CSDIS database and writes PNG/PDF plus the plotted
 data as CSV (the figure's table view). Run from the project root:
 
-    python figures/make_figure3.py
+    python figures/make_figure1.py
 """
 import csv
 import sqlite3
@@ -125,9 +125,9 @@ fig.text(0.01, 0.005,
          fontsize=6.5, color=INK2, va="bottom")
 fig.tight_layout(rect=(0, 0.075, 1, 1))
 for ext in ("png", "pdf"):
-    fig.savefig(OUT / f"Figure3_HK_accident_rates_2016_2025.{ext}", dpi=300, facecolor=SURFACE)
+    fig.savefig(OUT / f"Figure1_HK_accident_rates_2016_2025.{ext}", dpi=300, facecolor=SURFACE)
 
-with open(OUT / "Figure3_data.csv", "w", newline="", encoding="utf-8") as f:
+with open(OUT / "Figure1_data.csv", "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
     w.writerow(["year", "public_works_per_1000_workers_appendixA", "public_works_per_1000_workers_online",
                 "public_works_per_100000_manhours_appendixA", "construction_industry_per_1000_workers_appendixA",
