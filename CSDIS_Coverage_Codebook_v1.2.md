@@ -1,6 +1,6 @@
-# CSDIS Technology–Hazard Coverage Codebook v1.2 (Draft)
+# CSDIS Technology–Hazard Coverage Codebook v1.2
 
-**Status:** Double-coded and adjudicated by consensus (see Reliability procedure). Evidence links are still to be verified in CSDIS before rows are Locked.
+**Status:** Final for release 1.0.0. Double-coded and adjudicated by consensus (see Reliability procedure). All 97 cited evidence records were verified against the saved source pages on 17 Nov 2026. In the CSDIS database the mappings are Adjudicated, not Locked; the `human_action` column of the matrix records the original workflow instruction.
 
 **Change log:**
 
@@ -12,7 +12,7 @@
   - new R9 covers labels that may denote the technology's own absence.
 
   Classes coded under v1.1 are kept for the reliability statistics. v1.2 applies only to adjudication and later coding.
-- **v1.1** adds decision rules R1–R7, the full 2025 draft matrix ([CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv)), and records that CSDIS now stores separate hazard and technology evidence links. v1.0 covered a three-row pilot ([CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv)).
+- **v1.1** adds decision rules R1–R7, the full 2025 matrix (then a draft) ([CSDIS_Coverage_Matrix_2025.csv](CSDIS_Coverage_Matrix_2025.csv)), and records that CSDIS now stores separate hazard and technology evidence links. v1.0 covered a three-row pilot ([CSDIS_Coverage_Pilot.csv](CSDIS_Coverage_Pilot.csv)).
 
 ## Purpose and unit
 

@@ -2,7 +2,7 @@
 
 Usage (from the project root):
 
-    python tools/compare_coding.py CSDIS_Coverage_Matrix_2025_DRAFT.csv coder_pack/coding_sheet_XY.csv \
+    python tools/compare_coding.py CSDIS_Coverage_Matrix_2025.csv coder_pack/coding_sheet_XY.csv \
         --out coder_pack/disagreements_XY.csv
 
 Reports raw agreement and Cohen's kappa on coverage class (overall and per system), agreement

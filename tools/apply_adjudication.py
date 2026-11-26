@@ -2,7 +2,7 @@
 
 Usage (from the project root):
 
-    python tools/apply_adjudication.py CSDIS_Coverage_Matrix_2025_DRAFT.csv coder_pack/returns/adjudication_XY_FINAL.csv
+    python tools/apply_adjudication.py CSDIS_Coverage_Matrix_2025.csv coder_pack/returns/adjudication_XY_FINAL.csv
 
 The adjudication CSV needs the columns row_id, final_class, final_scope, rule, final_rationale,
 final_open_list and proposal_confidence. Rows listed there get the final class and scope and are marked

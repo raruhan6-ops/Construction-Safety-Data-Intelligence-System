@@ -63,7 +63,7 @@ def test_invalid_values_block_comparison(tmp_path: Path, capsys):
 
 
 def test_draft_matrix_passes_validation():
-    rows = compare_coding.load(str(ROOT / "CSDIS_Coverage_Matrix_2025_DRAFT.csv"))
+    rows = compare_coding.load(str(ROOT / "CSDIS_Coverage_Matrix_2025.csv"))
     assert len(rows) == 148
     assert compare_coding.validate(rows, "draft") == []
 

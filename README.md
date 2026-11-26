@@ -4,15 +4,20 @@
 ![Streamlit](https://img.shields.io/badge/UI-Streamlit-FF4B4B?logo=streamlit&logoColor=white)
 ![SQLite](https://img.shields.io/badge/Storage-SQLite-003B57?logo=sqlite&logoColor=white)
 ![Code license: MIT](https://img.shields.io/badge/Code%20license-MIT-green)
+![Data license: CC BY 4.0](https://img.shields.io/badge/Data%20license-CC%20BY%204.0-lightgrey)
 ![Research prototype](https://img.shields.io/badge/Status-Research%20prototype-orange)
 
 A local-first research workspace for collecting construction-safety sources, preserving their provenance, reviewing evidence, and building reproducible policy, technology, and injury-metric records.
 
+> **Release 1.0.0 (27 November 2026)** accompanies the manuscript *Mandated but Mismatched? Assessing the Alignment Between Smart Construction Safety Technologies and Reported Injury Hazards in Hong Kong and Singapore*. See [How to cite](#how-to-cite) and [What this release contains](#what-this-release-contains).
+>
 > **Project status:** Research prototype / first usable increment. The application and core workflows are implemented, but most seeded evidence and metrics still require human source review. This is a research workbench, not a safety-management or incident-reporting system.
 
 ## Contents
 
 - [Overview](#overview)
+- [What this release contains](#what-this-release-contains)
+- [How to cite](#how-to-cite)
 - [What CSDIS does](#what-csdis-does)
 - [Research integrity rules](#research-integrity-rules)
 - [Technology stack](#technology-stack)
@@ -56,6 +61,23 @@ flowchart LR
     J --- H
 ```
 
+## What this release contains
+
+| Included | Not included, and why |
+| --- | --- |
+| CSDIS software (`app.py`, `csdis/`, `tools/`) with offline tests | The local SQLite database and its backups: they hold third-party source text and the reviewers' working records |
+| The 148-row 2025 technology–hazard coverage matrix, the coding codebook (v1.2) and the three-row pilot | Official source files and full-text articles: third-party copyright (every official source is listed with its address in `CSDIS_Seed_Source_Registry.csv`) |
+| Figure 1 and Figure S1 (PRISMA 2020) with their data and the scripts that draw them | The coders' individual sheets and adjudication files: they identify the coders (the reliability statistics are in the codebook) |
+| The seed source registry, the core data dictionary and the second coder's guide with its blank sheet | The literature screening register (1,177 records with decisions): available from the corresponding author on reasonable request |
+
+**Licences:** the software is under the [MIT License](LICENSE); the coverage matrix, pilot, codebook, data dictionary, source registry, coder guide and sheet, and the figures with their data are under [CC BY 4.0](LICENSE-DATA.md). Facts and excerpts taken from official publications keep their publishers' terms.
+
+The manuscript's supplementary material (S1: eligibility criteria, decision rules and PRISMA procedure; S2: the 127 included studies) is published with the article.
+
+## How to cite
+
+Please cite the archived release, using the DOI shown on its Zenodo record. Citation metadata is in [CITATION.cff](CITATION.cff); GitHub's **Cite this repository** button formats it in APA and BibTeX. When the article is published, please cite it as well.
+
 ## What CSDIS does
 
 ### Source collection and versioning
@@ -94,7 +116,7 @@ Evidence and candidate rows retain source-version identifiers and locators. Revi
 - Checks that an automation label is compatible with the documented module mode; passive recording cannot be classified as AI detection without supporting evidence.
 - Provides review transitions for proposed and independently coded mappings, adjudication, and locking. A second coder must differ from the original coder before independent coding is recorded.
 
-The coding rules are in [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) (now v1.2, including the round-1 reliability results and the adjudication record). The 148-row 2025 matrix, [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv), was coded independently by two coders and adjudicated by consensus, and both evidence links of every row are human-verified. It describes documented capability, not deployment on sites. [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) is the earlier three-row pilot and is not a research finding. Each mapping stores two human-verified evidence links: hazard evidence (where the hazard is reported) and technology evidence (the module's documented function), matching the pilot CSV's `hazard_evidence_id` and `technology_evidence_id` columns. Mappings from the earlier single-evidence schema are migrated with that link kept as `legacy_evidence_id`; its role is not inferred, and the mapping cannot be adjudicated or locked until a researcher assigns both role-specific links.
+The coding rules are in [CSDIS_Coverage_Codebook_v1.2.md](CSDIS_Coverage_Codebook_v1.2.md) (including the round-1 reliability results and the adjudication record). The 148-row 2025 matrix, [CSDIS_Coverage_Matrix_2025.csv](CSDIS_Coverage_Matrix_2025.csv), was coded independently by two coders and adjudicated by consensus, and both evidence links of every row are human-verified. It describes documented capability, not deployment on sites. [CSDIS_Coverage_Pilot.csv](CSDIS_Coverage_Pilot.csv) is the earlier three-row pilot and is not a research finding. Each mapping stores two human-verified evidence links: hazard evidence (where the hazard is reported) and technology evidence (the module's documented function), matching the pilot CSV's `hazard_evidence_id` and `technology_evidence_id` columns. Mappings from the earlier single-evidence schema are migrated with that link kept as `legacy_evidence_id`; its role is not inferred, and the mapping cannot be adjudicated or locked until a researcher assigns both role-specific links.
 
 ### Literature discovery and screening
 
@@ -233,10 +255,13 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 |-- coder_pack/                         # Guide and blank sheet for the independent second coder
 |-- figures/                            # Figure 1 and Figure S1 (PRISMA 2020) data, scripts and outputs
 |-- tests/                              # Offline regression tests and fixtures
+|-- CITATION.cff                        # Citation metadata (GitHub, Zenodo)
+|-- .zenodo.json                        # Zenodo release metadata
 |-- data/                               # Local database, originals, and attachments (ignored)
 |-- CSDIS_Seed_Source_Registry.csv      # Seed source metadata
 |-- CSDIS_Core_Data_Dictionary.csv      # Core field definitions
-|-- LICENSE                            # MIT license for original software code
+|-- LICENSE                             # MIT license for the software code
+|-- LICENSE-DATA.md                     # CC BY 4.0 for the research data, documentation and figures
 |-- requirements.txt                    # Runtime dependencies
 `-- requirements-dev.txt                # Development/test dependencies
 ```
@@ -245,11 +270,12 @@ The repository also contains the research coding artifacts below. The manuscript
 
 | Research artifact | Purpose |
 | --- | --- |
-| [CSDIS_Coverage_Codebook_v1_DRAFT.md](CSDIS_Coverage_Codebook_v1_DRAFT.md) | Coverage coding rules (v1.2), reliability procedure, round-1 agreement and the adjudication record. |
-| [CSDIS_Coverage_Matrix_2025_DRAFT.csv](CSDIS_Coverage_Matrix_2025_DRAFT.csv) | All 74 DEVB 2025 hazard categories (Appendices H, L-N) coded against 4S and VSS functions (148 rows), with hazard and technology evidence locators. Independently double-coded and adjudicated by consensus; evidence links human-verified. |
-| [CSDIS_Coverage_Pilot_DRAFT.csv](CSDIS_Coverage_Pilot_DRAFT.csv) | Earlier three-row pilot of the coding scheme. |
+| [CSDIS_Coverage_Codebook_v1.2.md](CSDIS_Coverage_Codebook_v1.2.md) | Coverage coding rules (v1.2), reliability procedure, round-1 agreement and the adjudication record. |
+| [CSDIS_Coverage_Matrix_2025.csv](CSDIS_Coverage_Matrix_2025.csv) | All 74 DEVB 2025 hazard categories (Appendices H, L-N) coded against 4S and VSS functions (148 rows), with hazard and technology evidence locators. Independently double-coded and adjudicated by consensus; evidence links human-verified. |
+| [CSDIS_Coverage_Pilot.csv](CSDIS_Coverage_Pilot.csv) | Earlier three-row pilot of the coding scheme. |
+| [figures/](figures/) | Figure 1 (Hong Kong public-works accident rates, 2016–2025) and Figure S1 (PRISMA 2020 flow), each with its data CSV and script. Both scripts read the local CSDIS database, which is not in the release; the plotted values are in the data CSVs. |
 | [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) | Core data-field definitions. |
-| [coder_pack/guide.md](coder_pack/guide.md) | Instructions given to the independent second coder, with the blank coding sheet. |
+| [coder_pack/guide.md](coder_pack/guide.md) | Instructions given to the independent second coder, with the blank coding sheet. The guide is kept as given and uses the files' working names (`..._DRAFT.csv`), which were dropped at release 1.0.0. |
 
 ## Local data, privacy, and backups
 
@@ -290,7 +316,7 @@ The offline regression suite covers:
 - Coverage mappings: separate hazard/technology evidence, review-chain rules, and legacy single-evidence migration
 - Literature full-text hashing, duplicate candidates, screening, and review guards
 
-Tests use temporary databases, local fixtures, and mocked HTTP responses; they do not rely on live external websites. Fresh-install workflow verification remains an explicit gap; see the implementation plan.
+Tests use temporary databases, local fixtures, and mocked HTTP responses; they do not rely on live external websites. Fresh-install workflow verification remains an explicit gap.
 
 ## Current research dataset
 
@@ -323,15 +349,14 @@ For detailed source identifiers, review status, field definitions, open conflict
 
 1. Complete the documented fresh-install and end-to-end acceptance checks.
 2. Human-review DEVB, Buildings Department, Legislative Council, MOM, and Ombudsman evidence and metric records; retain unresolved conflicts until adjudicated.
-3. Complete title/abstract and full-text screening of the literature register, with a second screener on a random sample, and generate the PRISMA 2020 flow from the register.
-4. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
-5. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
+3. Add deeper literature pagination and reproducible multi-ledger exports with validation and provenance manifests.
+4. Consider causal or interrupted-time-series analysis only after intervention timing, treated-project exposure, adoption/compliance, stable outcome definitions, and adequate pre/post observations are available.
 
 ## Copyright, reuse, and project policies
 
 ### Current rights status
 
-The repository includes an [MIT License](LICENSE) for the original CSDIS software code, with the copyright notice **Copyright (c) 2026 Rejuan Ahmed Ruhan**. This grant does not cover third-party sources, government publications, datasets, or research manuscripts and other research artifacts unless they carry a separate license or permission. Those materials retain their own rights and terms. Public visibility on GitHub is not a substitute for checking those source-specific rights.
+The repository includes an [MIT License](LICENSE) for the original CSDIS software code, with the copyright notice **Copyright (c) 2026 Rejuan Ahmed Ruhan**. The research data, documentation and figures are licensed under [CC BY 4.0](LICENSE-DATA.md) by the four authors. Neither grant covers third-party sources, government publications, datasets, or research manuscripts and other research artifacts unless they carry a separate license or permission. Those materials retain their own rights and terms. Public visibility on GitHub is not a substitute for checking those source-specific rights.
 
 Before distributing the software, the project owner should confirm that they have the right to license all included code under MIT, including any employment, university, funding, or contributor agreements that may apply. Copyright ownership can depend on authorship, employment, commissioning, and contract terms. The MIT grant applies only to original project code; it does not imply ownership of third-party sources.
 
@@ -356,7 +381,7 @@ Official references (check the current notice for the actual source being reused
 
 | Policy or file | Decision/action needed |
 | --- | --- |
-| `LICENSE` | MIT is selected for original software code. Confirm that project agreements allow the named owner to grant these rights. |
+| `LICENSE`, `LICENSE-DATA.md` | MIT for the software code and CC BY 4.0 for the research data, documentation and figures (adopted at release 1.0.0). Confirm that project agreements allow the named owners to grant these rights. |
 | `COPYRIGHT` / `NOTICE` | Keep the code copyright notice consistent with `LICENSE`; list third-party notices and material-specific licenses separately. A notice does not replace a license. |
 | `THIRD_PARTY_NOTICES.md` or source-reuse register | Document source-specific license/terms, attribution, restrictions, permissions, and whether redistribution of the original file is allowed. |
 | `CONTRIBUTING.md` | Set contribution review rules and require contributors to confirm they have the right to submit code under the project's MIT license; document any institution or employer approvals required. |
