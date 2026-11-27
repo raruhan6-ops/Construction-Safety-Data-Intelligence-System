@@ -47,6 +47,9 @@ FULL_TEXT_REVIEW_GUIDE.md
 # --- Coder pack source copies (third-party documents) and coder returns ---
 coder_pack/sources/
 coder_pack/returns/
+# Coder B's original pack (names the coder) and full-text articles (third-party copyright)
+coder_pack/coder_pack/
+coder_pack/research pdf/
 tools/coding_sheet_*.csv
 tools/coding_report_*.md
 
