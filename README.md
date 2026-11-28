@@ -78,7 +78,7 @@ The manuscript's supplementary material (S1: eligibility criteria, decision rule
 
 ## How to cite
 
-Please cite the archived release on Zenodo: [doi:10.5281/zenodo.24570714](https://doi.org/10.5281/zenodo.24570714). This DOI always resolves to the latest version; version 1.0.0 is [doi:10.5281/zenodo.24570715](https://doi.org/10.5281/zenodo.24570715).
+Please cite the archived release on Zenodo: [doi:10.5281/zenodo.24570714](https://doi.org/10.5281/zenodo.24570714). This DOI always resolves to the latest version; version 1.1.0 is [doi:10.5281/zenodo.24620281](https://doi.org/10.5281/zenodo.24620281) and version 1.0.0 is [doi:10.5281/zenodo.24570715](https://doi.org/10.5281/zenodo.24570715).
 
 > Samir, M. S., Ruhan, R. A., Atika, A. M., & Afruz, S. D. (2026). *CSDIS: Construction Safety Data Intelligence System* (Version 1.1.0) [Computer software and data]. Zenodo. https://doi.org/10.5281/zenodo.24570714
 
