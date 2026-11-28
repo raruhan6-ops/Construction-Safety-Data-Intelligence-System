@@ -19,6 +19,7 @@ indicate if changes were made.
 - `CSDIS_Core_Data_Dictionary.csv`
 - `CSDIS_Seed_Source_Registry.csv`
 - `coder_pack/guide.md` and `coder_pack/coding_sheet.csv`
+- `reliability/` — the anonymized codings, adjudication record and README
 - `figures/` — the figure images (PNG, PDF) and data files (CSV)
 
 The software (all `.py` files, including the figure scripts in `figures/`) is licensed separately
