@@ -11,7 +11,7 @@ abstract: >-
   and Singapore". The release contains the CSDIS software (source collection, evidence review,
   technology-hazard coverage coding and literature screening), the double-coded 148-row 2025
   coverage matrix with its codebook, and the data and scripts for Figure 1 and the PRISMA 2020
-  flow diagram (Figure S1).
+  flow diagram (Figure S1), and anonymized inter-coder reliability files.
 authors:
   - family-names: Samir
     given-names: Mahir Sarwar
@@ -25,9 +25,9 @@ authors:
   - family-names: Afruz
     given-names: Shanjana Dil
     affiliation: "School of Civil Engineering, Zhengzhou University, Zhengzhou, China"
-version: 1.0.0
+version: 1.1.0
 doi: 10.5281/zenodo.24570714
-date-released: 2026-11-27
+date-released: 2026-11-28
 license: MIT
 repository-code: "https://github.com/raruhan6-ops/Construction-Safety-Data-Intelligence-System"
 keywords:

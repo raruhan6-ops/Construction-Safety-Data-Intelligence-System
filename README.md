@@ -10,7 +10,7 @@
 
 A local-first research workspace for collecting construction-safety sources, preserving their provenance, reviewing evidence, and building reproducible policy, technology, and injury-metric records.
 
-> **Release 1.0.0 (27 November 2026)** accompanies the manuscript *Mandated but Mismatched? Assessing the Alignment Between Smart Construction Safety Technologies and Reported Injury Hazards in Hong Kong and Singapore*. See [How to cite](#how-to-cite) and [What this release contains](#what-this-release-contains).
+> **Release 1.1.0 (28 November 2026)** adds the anonymized inter-coder reliability files in `reliability/`. **Release 1.0.0 (27 November 2026)** accompanies the manuscript *Mandated but Mismatched? Assessing the Alignment Between Smart Construction Safety Technologies and Reported Injury Hazards in Hong Kong and Singapore*. See [How to cite](#how-to-cite) and [What this release contains](#what-this-release-contains).
 >
 > **Project status:** Research prototype / first usable increment. The application and core workflows are implemented, but most seeded evidence and metrics still require human source review. This is a research workbench, not a safety-management or incident-reporting system.
 
@@ -68,7 +68,8 @@ flowchart LR
 | --- | --- |
 | CSDIS software (`app.py`, `csdis/`, `tools/`) with offline tests | The local SQLite database and its backups: they hold third-party source text and the reviewers' working records |
 | The 148-row 2025 technology–hazard coverage matrix, the coding codebook (v1.2) and the three-row pilot | Official source files and full-text articles: third-party copyright (every official source is listed with its address in `CSDIS_Seed_Source_Registry.csv`) |
-| Figure 1 and Figure S1 (PRISMA 2020) with their data and the scripts that draw them | The coders' individual sheets and adjudication files: they identify the coders (the reliability statistics are in the codebook) |
+| Figure 1 and Figure S1 (PRISMA 2020) with their data and the scripts that draw them | The coders' named working files (anonymized copies are in `reliability/`) |
+| Anonymized coder A and coder B codings and the adjudication record (`reliability/`, from release 1.1.0) | |
 | The seed source registry, the core data dictionary and the second coder's guide with its blank sheet | The literature screening register (1,177 records with decisions): available from the corresponding author on reasonable request |
 
 **Licences:** the software is under the [MIT License](LICENSE); the coverage matrix, pilot, codebook, data dictionary, source registry, coder guide and sheet, and the figures with their data are under [CC BY 4.0](LICENSE-DATA.md). Facts and excerpts taken from official publications keep their publishers' terms.
@@ -79,7 +80,7 @@ The manuscript's supplementary material (S1: eligibility criteria, decision rule
 
 Please cite the archived release on Zenodo: [doi:10.5281/zenodo.24570714](https://doi.org/10.5281/zenodo.24570714). This DOI always resolves to the latest version; version 1.0.0 is [doi:10.5281/zenodo.24570715](https://doi.org/10.5281/zenodo.24570715).
 
-> Samir, M. S., Ruhan, R. A., Atika, A. M., & Afruz, S. D. (2026). *CSDIS: Construction Safety Data Intelligence System* (Version 1.0.0) [Computer software and data]. Zenodo. https://doi.org/10.5281/zenodo.24570714
+> Samir, M. S., Ruhan, R. A., Atika, A. M., & Afruz, S. D. (2026). *CSDIS: Construction Safety Data Intelligence System* (Version 1.1.0) [Computer software and data]. Zenodo. https://doi.org/10.5281/zenodo.24570714
 
 Citation metadata is in [CITATION.cff](CITATION.cff); GitHub's **Cite this repository** button formats it in APA and BibTeX. When the article is published, please cite it as well.
 
@@ -271,7 +272,7 @@ Repeat `--source-id` to select more than one source. Retrieval is user-triggered
 `-- requirements-dev.txt                # Development/test dependencies
 ```
 
-The repository also contains the research coding artifacts below. The manuscript, planning documents and coder correspondence are kept locally and are not in the repository; coder-identifying files are withheld.
+The repository also contains the research coding artifacts below. The manuscript, planning documents and coder correspondence are kept locally and are not in the repository; the coders' named working files are withheld, and anonymized copies are in `reliability/`.
 
 | Research artifact | Purpose |
 | --- | --- |
@@ -280,6 +281,7 @@ The repository also contains the research coding artifacts below. The manuscript
 | [CSDIS_Coverage_Pilot.csv](CSDIS_Coverage_Pilot.csv) | Earlier three-row pilot of the coding scheme. |
 | [figures/](figures/) | Figure 1 (Hong Kong public-works accident rates, 2016–2025) and Figure S1 (PRISMA 2020 flow), each with its data CSV and script. Both scripts read the local CSDIS database, which is not in the release; the plotted values are in the data CSVs. |
 | [CSDIS_Core_Data_Dictionary.csv](CSDIS_Core_Data_Dictionary.csv) | Core data-field definitions. |
+| [reliability/](reliability/) | Anonymized coder A and coder B codings and the adjudication record, for recomputing inter-coder agreement (see its README for which version of coder B's sheet it is). |
 | [coder_pack/guide.md](coder_pack/guide.md) | Instructions given to the independent second coder, with the blank coding sheet. The guide is kept as given and uses the files' working names (`..._DRAFT.csv`), which were dropped at release 1.0.0. |
 
 ## Local data, privacy, and backups

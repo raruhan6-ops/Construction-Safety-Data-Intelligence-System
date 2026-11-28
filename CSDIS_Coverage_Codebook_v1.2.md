@@ -79,7 +79,7 @@ Code the documented function, not an assumed capability: **Passive recording**, 
 
 ### Round 1 (v1.1 rules, returned 17 Nov 2026)
 
-- **Comparison:** coder A, the AI-assisted draft, against coder B, the independent sheet. Coder B's sheet and the adjudication file are kept outside version control because they identify the coder.
+- **Comparison:** coder A, the AI-assisted draft, against coder B, the independent sheet. Anonymized copies of both codings and of the adjudication record are in `reliability/` (from release 1.1.0); the working files, which name the coders, stay outside version control.
 - **Agreement on the first version returned:**
   - all 148 rows: 122/148 agree, κ = 0.670;
   - HK 4S: 54/74, κ = 0.570;
